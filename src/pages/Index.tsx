@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
@@ -16,11 +17,13 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
+    <div className="flex h-screen bg-gradient-dark">
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         
         <main className="flex-1 overflow-y-auto p-6">
           {/* Welcome Section */}

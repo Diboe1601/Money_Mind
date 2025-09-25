@@ -1,12 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bell, Search, Settings, User } from "lucide-react";
+import { Bell, Search, Settings, User, Menu } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+}
+
+export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
   return (
-    <header className="bg-card border-b border-border px-6 py-4">
+    <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-muted-foreground hover:text-foreground lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">M</span>

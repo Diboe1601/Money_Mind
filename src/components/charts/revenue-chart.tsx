@@ -1,16 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-
-const data = [
-  { month: "Jan", revenue: 45000, expenses: 32000 },
-  { month: "Feb", revenue: 52000, expenses: 35000 },
-  { month: "Mar", revenue: 48000, expenses: 38000 },
-  { month: "Apr", revenue: 61000, expenses: 42000 },
-  { month: "May", revenue: 58000, expenses: 40000 },
-  { month: "Jun", revenue: 67000, expenses: 45000 },
-];
+import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function RevenueChart() {
+  const { chartData, loading } = useDashboardMetrics();
+
+  if (loading) {
+    return (
+      <Card className="bg-gradient-card shadow-card">
+        <CardHeader>
+          <CardTitle className="font-heading">Revenue vs Expenses</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="w-full h-[300px]" />
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className="bg-gradient-card shadow-card">
       <CardHeader>
@@ -18,7 +25,7 @@ export function RevenueChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
+          <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
               dataKey="month" 

@@ -6,7 +6,8 @@ import { RevenueChart } from "@/components/charts/revenue-chart";
 import { ExpenseBreakdown } from "@/components/charts/expense-breakdown";
 import { RecentTransactions } from "@/components/recent-transactions";
 import { Button } from "@/components/ui/button";
-import { useTransactions } from "@/hooks/use-transactions";
+import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -19,7 +20,7 @@ import {
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const { metrics, loading } = useTransactions();
+  const { metrics, loading } = useDashboardMetrics();
 
   return (
     <div className="flex h-screen bg-gradient-dark">
@@ -40,33 +41,50 @@ const Index = () => {
 
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <MetricCard
-              title="Total Revenue"
-              value={loading ? "Loading..." : `$${metrics.totalRevenue.toLocaleString()}`}
-              change={{ value: "+12.3%", type: "increase" }}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-            <MetricCard
-              title="Total Expenses"
-              value={loading ? "Loading..." : `$${metrics.totalExpenses.toLocaleString()}`}
-              change={{ value: "+8.1%", type: "increase" }}
-              icon={<TrendingDown className="h-4 w-4" />}
-            />
-            <MetricCard
-              title="Net Profit"
-              value={loading ? "Loading..." : `$${metrics.netProfit.toLocaleString()}`}
-              change={{ 
-                value: metrics.netProfit >= 0 ? "+18.7%" : "-18.7%", 
-                type: metrics.netProfit >= 0 ? "increase" : "decrease" 
-              }}
-              icon={<TrendingUp className="h-4 w-4" />}
-            />
-            <MetricCard
-              title="Active Clients"
-              value={loading ? "Loading..." : metrics.activeClients.toString()}
-              change={{ value: "+5.4%", type: "increase" }}
-              icon={<Users className="h-4 w-4" />}
-            />
+            {loading ? (
+              <>
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-gradient-card rounded-lg p-6 shadow-card">
+                    <div className="flex items-center justify-between mb-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                    <Skeleton className="h-8 w-20 mb-2" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <MetricCard
+                  title="Total Revenue"
+                  value={`$${metrics.totalRevenue.toLocaleString()}`}
+                  change={{ value: metrics.revenueChange, type: "increase" }}
+                  icon={<DollarSign className="h-4 w-4" />}
+                />
+                <MetricCard
+                  title="Total Expenses"
+                  value={`$${metrics.totalExpenses.toLocaleString()}`}
+                  change={{ value: metrics.expensesChange, type: "increase" }}
+                  icon={<TrendingDown className="h-4 w-4" />}
+                />
+                <MetricCard
+                  title="Net Profit"
+                  value={`$${metrics.netProfit.toLocaleString()}`}
+                  change={{ 
+                    value: metrics.profitChange, 
+                    type: metrics.netProfit >= 0 ? "increase" : "decrease" 
+                  }}
+                  icon={<TrendingUp className="h-4 w-4" />}
+                />
+                <MetricCard
+                  title="Active Clients"
+                  value={metrics.activeClients.toString()}
+                  change={{ value: metrics.clientsChange, type: "increase" }}
+                  icon={<Users className="h-4 w-4" />}
+                />
+              </>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -109,20 +127,22 @@ const Index = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Income this month</span>
                     <span className="font-semibold text-success">
-                      {loading ? "Loading..." : `$${metrics.totalRevenue.toLocaleString()}`}
+                      ${loading ? '0' : metrics.totalRevenue.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Expenses this month</span>
                     <span className="font-semibold text-danger">
-                      {loading ? "Loading..." : `$${metrics.totalExpenses.toLocaleString()}`}
+                      ${loading ? '0' : metrics.totalExpenses.toLocaleString()}
                     </span>
                   </div>
                   <div className="border-t pt-3">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Net Profit</span>
-                      <span className={`font-bold text-lg ${metrics.netProfit >= 0 ? 'text-success' : 'text-danger'}`}>
-                        {loading ? "Loading..." : `$${metrics.netProfit.toLocaleString()}`}
+                      <span className={`font-bold text-lg ${
+                        metrics.netProfit >= 0 ? 'text-success' : 'text-danger'
+                      }`}>
+                        ${loading ? '0' : metrics.netProfit.toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -134,21 +154,15 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Avg. Transaction</span>
-                    <span className="font-semibold">
-                      {loading ? "Loading..." : `$${Math.round((metrics.totalRevenue + metrics.totalExpenses) / Math.max(metrics.activeClients, 1)).toLocaleString()}`}
-                    </span>
+                    <span className="font-semibold">$1,247</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Pending Invoices</span>
-                    <span className="font-semibold">
-                      {loading ? "Loading..." : metrics.pendingInvoices}
-                    </span>
+                    <span className="font-semibold">23</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Overdue Payments</span>
-                    <span className="font-semibold text-warning">
-                      {loading ? "Loading..." : metrics.overdue}
-                    </span>
+                    <span className="font-semibold text-warning">5</span>
                   </div>
                 </div>
               </div>

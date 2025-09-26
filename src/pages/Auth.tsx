@@ -80,6 +80,12 @@ const Auth = () => {
               description: "Please check your email and password.",
               variant: "destructive"
             });
+          } else if (error.message.includes("Email not confirmed")) {
+            toast({
+              title: "Email not confirmed",
+              description: "Please check your email and click the confirmation link before signing in.",
+              variant: "destructive"
+            });
           } else {
             throw error;
           }

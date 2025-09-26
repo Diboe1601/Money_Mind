@@ -28,12 +28,19 @@ const Landing = () => {
             <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
           </div>
           
-          <Link to="/auth">
-            <Button className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
-              Sign In
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link to="/signup">
+              <Button variant="outline" className="border-border/50 hover:bg-background/10">
+                Sign Up
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
+                Sign In
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 

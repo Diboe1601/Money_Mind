@@ -6,6 +6,7 @@ import { RevenueChart } from "@/components/charts/revenue-chart";
 import { ExpenseBreakdown } from "@/components/charts/expense-breakdown";
 import { RecentTransactions } from "@/components/recent-transactions";
 import { Button } from "@/components/ui/button";
+import { useTransactions } from "@/hooks/use-transactions";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -18,6 +19,7 @@ import {
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { metrics, loading } = useTransactions();
 
   return (
     <div className="flex h-screen bg-gradient-dark">
@@ -40,25 +42,28 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <MetricCard
               title="Total Revenue"
-              value="$67,489"
+              value={loading ? "Loading..." : `$${metrics.totalRevenue.toLocaleString()}`}
               change={{ value: "+12.3%", type: "increase" }}
               icon={<DollarSign className="h-4 w-4" />}
             />
             <MetricCard
               title="Total Expenses"
-              value="$45,230"
+              value={loading ? "Loading..." : `$${metrics.totalExpenses.toLocaleString()}`}
               change={{ value: "+8.1%", type: "increase" }}
               icon={<TrendingDown className="h-4 w-4" />}
             />
             <MetricCard
               title="Net Profit"
-              value="$22,259"
-              change={{ value: "+18.7%", type: "increase" }}
+              value={loading ? "Loading..." : `$${metrics.netProfit.toLocaleString()}`}
+              change={{ 
+                value: metrics.netProfit >= 0 ? "+18.7%" : "-18.7%", 
+                type: metrics.netProfit >= 0 ? "increase" : "decrease" 
+              }}
               icon={<TrendingUp className="h-4 w-4" />}
             />
             <MetricCard
               title="Active Clients"
-              value="1,249"
+              value={loading ? "Loading..." : metrics.activeClients.toString()}
               change={{ value: "+5.4%", type: "increase" }}
               icon={<Users className="h-4 w-4" />}
             />
@@ -103,16 +108,22 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Income this month</span>
-                    <span className="font-semibold text-success">$67,489</span>
+                    <span className="font-semibold text-success">
+                      {loading ? "Loading..." : `$${metrics.totalRevenue.toLocaleString()}`}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Expenses this month</span>
-                    <span className="font-semibold text-danger">$45,230</span>
+                    <span className="font-semibold text-danger">
+                      {loading ? "Loading..." : `$${metrics.totalExpenses.toLocaleString()}`}
+                    </span>
                   </div>
                   <div className="border-t pt-3">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Net Profit</span>
-                      <span className="font-bold text-success text-lg">$22,259</span>
+                      <span className={`font-bold text-lg ${metrics.netProfit >= 0 ? 'text-success' : 'text-danger'}`}>
+                        {loading ? "Loading..." : `$${metrics.netProfit.toLocaleString()}`}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -123,15 +134,21 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Avg. Transaction</span>
-                    <span className="font-semibold">$1,247</span>
+                    <span className="font-semibold">
+                      {loading ? "Loading..." : `$${Math.round((metrics.totalRevenue + metrics.totalExpenses) / Math.max(metrics.activeClients, 1)).toLocaleString()}`}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Pending Invoices</span>
-                    <span className="font-semibold">23</span>
+                    <span className="font-semibold">
+                      {loading ? "Loading..." : metrics.pendingInvoices}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Overdue Payments</span>
-                    <span className="font-semibold text-warning">5</span>
+                    <span className="font-semibold text-warning">
+                      {loading ? "Loading..." : metrics.overdue}
+                    </span>
                   </div>
                 </div>
               </div>

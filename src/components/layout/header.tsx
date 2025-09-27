@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, Search, Settings, User, Menu } from "lucide-react";
+import { AddTransactionForm } from "@/components/forms/add-transaction-form";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -50,9 +51,7 @@ export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
             <User className="h-4 w-4" />
           </Button>
           
-          <Button className="bg-gradient-primary hover:bg-primary-hover">
-            Add Transaction
-          </Button>
+          <AddTransactionForm />
         </div>
       </div>
     </header>

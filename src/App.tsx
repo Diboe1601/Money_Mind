@@ -7,6 +7,13 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import SignUp from "./pages/SignUp";
 import Index from "./pages/Index";
+import Transactions from "./pages/Transactions";
+import Analytics from "./pages/Analytics";
+import Reports from "./pages/Reports";
+import Budgets from "./pages/Budgets";
+import Invoices from "./pages/Invoices";
+import Clients from "./pages/Clients";
+import Calendar from "./pages/Calendar";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +29,13 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Index />} />
+          <Route path="/dashboard/transactions" element={<Transactions />} />
+          <Route path="/dashboard/analytics" element={<Analytics />} />
+          <Route path="/dashboard/reports" element={<Reports />} />
+          <Route path="/dashboard/budgets" element={<Budgets />} />
+          <Route path="/dashboard/invoices" element={<Invoices />} />
+          <Route path="/dashboard/clients" element={<Clients />} />
+          <Route path="/dashboard/calendar" element={<Calendar />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -104,7 +104,7 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
         )}
       </div>
 
-      <div className="absolute bottom-12 left-0 right-0 px-2">
+      <div className="absolute bottom-16 left-0 right-0 px-2">
         <Button
           onClick={handleSignOut}
           variant="outline"

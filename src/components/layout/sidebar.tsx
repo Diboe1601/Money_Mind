@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   LayoutDashboard, 
   Receipt, 
@@ -14,18 +17,19 @@ import {
   Calendar,
   Target,
   ChevronsRight,
-  ChevronDown
+  ChevronDown,
+  LogOut
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", icon: LayoutDashboard, href: "/", current: true },
-  { name: "Transactions", icon: Receipt, href: "/transactions", current: false },
-  { name: "Analytics", icon: TrendingUp, href: "/analytics", current: false },
-  { name: "Reports", icon: FileText, href: "/reports", current: false },
-  { name: "Budgets", icon: Target, href: "/budgets", current: false },
-  { name: "Invoices", icon: CreditCard, href: "/invoices", current: false },
-  { name: "Clients", icon: Users, href: "/clients", current: false },
-  { name: "Calendar", icon: Calendar, href: "/calendar", current: false },
+  { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+  { name: "Transactions", icon: Receipt, href: "/dashboard/transactions" },
+  { name: "Analytics", icon: TrendingUp, href: "/dashboard/analytics" },
+  { name: "Reports", icon: FileText, href: "/dashboard/reports" },
+  { name: "Budgets", icon: Target, href: "/dashboard/budgets" },
+  { name: "Invoices", icon: CreditCard, href: "/dashboard/invoices" },
+  { name: "Clients", icon: Users, href: "/dashboard/clients" },
+  { name: "Calendar", icon: Calendar, href: "/dashboard/calendar" },
 ];
 
 interface SidebarProps {
@@ -34,7 +38,26 @@ interface SidebarProps {
 }
 
 export function Sidebar({ open, setOpen }: SidebarProps) {
-  const [selected, setSelected] = useState("Dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate("/");
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out of your account.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error signing out",
+        description: "There was a problem signing you out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <motion.nav
@@ -52,10 +75,10 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
             key={item.name}
             Icon={item.icon}
             title={item.name}
-            selected={selected}
-            setSelected={setSelected}
+            href={item.href}
             open={open}
-            current={item.current}
+            current={location.pathname === item.href}
+            navigate={navigate}
           />
         ))}
       </div>
@@ -81,19 +104,31 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
         )}
       </div>
 
+      <div className="absolute bottom-12 left-0 right-0 px-2">
+        <Button
+          onClick={handleSignOut}
+          variant="outline"
+          size="sm"
+          className="w-full"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          {open && "Sign Out"}
+        </Button>
+      </div>
+
       <ToggleClose open={open} setOpen={setOpen} />
     </motion.nav>
   );
 }
 
-const Option = ({ Icon, title, selected, setSelected, open, current }: any) => {
+const Option = ({ Icon, title, href, open, current, navigate }: any) => {
   return (
     <motion.button
       layout
-      onClick={() => setSelected(title)}
+      onClick={() => navigate(href)}
       className={cn(
         "relative flex h-11 w-full items-center rounded-md transition-colors",
-        current || selected === title
+        current
           ? "bg-gradient-primary text-primary-foreground shadow-glow"
           : "text-muted-foreground hover:text-foreground hover:bg-accent"
       )}

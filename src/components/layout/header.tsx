@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Bell, Search, Settings, User, Menu } from "lucide-react";
+import { Search, Settings, User, Menu } from "lucide-react";
 import { AddTransactionForm } from "@/components/forms/add-transaction-form";
+import { NotificationPanel } from "@/components/notifications/notification-panel";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
@@ -49,10 +50,7 @@ export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
         </div>
         
         <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-danger rounded-full"></span>
-          </Button>
+          <NotificationPanel />
           
           <Button variant="ghost" size="icon" onClick={handleSettingsClick}>
             <Settings className="h-4 w-4" />

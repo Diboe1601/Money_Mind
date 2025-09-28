@@ -7,7 +7,12 @@ import { ExpenseBreakdown } from "@/components/charts/expense-breakdown";
 import { RecentTransactions } from "@/components/recent-transactions";
 import { Button } from "@/components/ui/button";
 import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
+import { useQuickStats } from "@/hooks/use-quick-stats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AddTransactionForm } from "@/components/forms/add-transaction-form";
+import { InvoiceForm } from "@/components/forms/invoice-form";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -21,6 +26,20 @@ import {
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { metrics, loading } = useDashboardMetrics();
+  const { stats, loading: statsLoading } = useQuickStats();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleExportData = () => {
+    toast({
+      title: "Export Started",
+      description: "Your data export will be ready shortly.",
+    });
+  };
+
+  const handleViewReports = () => {
+    navigate("/reports");
+  };
 
   return (
     <div className="flex h-screen bg-gradient-dark">
@@ -89,19 +108,13 @@ const Index = () => {
 
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mb-8">
-            <Button className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Transaction
-            </Button>
-            <Button variant="success">
-              <Plus className="mr-2 h-4 w-4" />
-              New Invoice
-            </Button>
-            <Button variant="outline">
+            <AddTransactionForm />
+            <InvoiceForm />
+            <Button variant="outline" onClick={handleExportData}>
               <Download className="mr-2 h-4 w-4" />
               Export Data
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleViewReports}>
               <Eye className="mr-2 h-4 w-4" />
               View Reports
             </Button>
@@ -154,15 +167,21 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Avg. Transaction</span>
-                    <span className="font-semibold">$1,247</span>
+                    <span className="font-semibold">
+                      ${statsLoading ? '0' : stats.avgTransaction.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Pending Invoices</span>
-                    <span className="font-semibold">23</span>
+                    <span className="font-semibold">
+                      {statsLoading ? '0' : stats.pendingInvoices}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Overdue Payments</span>
-                    <span className="font-semibold text-warning">5</span>
+                    <span className="font-semibold text-warning">
+                      {statsLoading ? '0' : stats.overduePayments}
+                    </span>
                   </div>
                 </div>
               </div>

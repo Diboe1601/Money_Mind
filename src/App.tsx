@@ -14,6 +14,8 @@ import Budgets from "./pages/Budgets";
 import Invoices from "./pages/Invoices";
 import Clients from "./pages/Clients";
 import Calendar from "./pages/Calendar";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,9 @@ const App = () => (
           <Route path="/dashboard/invoices" element={<Invoices />} />
           <Route path="/dashboard/clients" element={<Clients />} />
           <Route path="/dashboard/calendar" element={<Calendar />} />
+          <Route path="/dashboard/profile" element={<Profile />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/reports" element={<Reports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

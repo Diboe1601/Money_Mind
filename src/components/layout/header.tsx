@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, Search, Settings, User, Menu } from "lucide-react";
 import { AddTransactionForm } from "@/components/forms/add-transaction-form";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -9,6 +10,16 @@ interface HeaderProps {
 }
 
 export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
+  const navigate = useNavigate();
+
+  const handleSettingsClick = () => {
+    navigate("/dashboard/settings");
+  };
+
+  const handleProfileClick = () => {
+    navigate("/dashboard/profile");
+  };
+
   return (
     <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated">
       <div className="flex items-center justify-between">
@@ -43,11 +54,11 @@ export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
             <span className="absolute -top-1 -right-1 h-3 w-3 bg-danger rounded-full"></span>
           </Button>
           
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={handleSettingsClick}>
             <Settings className="h-4 w-4" />
           </Button>
           
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={handleProfileClick}>
             <User className="h-4 w-4" />
           </Button>
           

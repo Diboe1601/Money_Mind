@@ -5,36 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Plus, Target } from "lucide-react";
+import { useBudgets } from "@/hooks/use-budgets";
+import { CreateBudgetForm } from "@/components/forms/create-budget-form";
 
 const Budgets = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const budgets = [
-    {
-      category: "Food & Dining",
-      spent: 850,
-      budget: 1200,
-      color: "bg-green-500",
-    },
-    {
-      category: "Transportation",
-      spent: 420,
-      budget: 500,
-      color: "bg-blue-500",
-    },
-    {
-      category: "Entertainment",
-      spent: 180,
-      budget: 300,
-      color: "bg-purple-500",
-    },
-    {
-      category: "Shopping",
-      spent: 650,
-      budget: 600,
-      color: "bg-red-500",
-    },
-  ];
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const { budgets, loading, addBudget } = useBudgets();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -49,45 +26,69 @@ const Budgets = () => {
                 Track and manage your spending limits
               </p>
             </div>
-            <Button>
+            <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create Budget
             </Button>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2">
-            {budgets.map((budget, index) => (
-              <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <Target className="h-8 w-8 text-primary" />
-                    <div>
-                      <CardTitle className="text-lg">{budget.category}</CardTitle>
-                      <CardDescription>
-                        ${budget.spent} of ${budget.budget} spent
-                      </CardDescription>
+          {loading ? (
+            <div className="text-center py-12">Loading budgets...</div>
+          ) : budgets.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No budgets yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Create your first budget to start tracking your spending
+                </p>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Budget
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2">
+              {budgets.map((budget) => (
+                <Card key={budget.id}>
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <Target className="h-8 w-8 text-primary" />
+                      <div>
+                        <CardTitle className="text-lg">{budget.category}</CardTitle>
+                        <CardDescription>
+                          ${budget.spent.toFixed(2)} of ${budget.amount.toFixed(2)} spent
+                        </CardDescription>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Progress 
-                      value={(budget.spent / budget.budget) * 100} 
-                      className="h-3"
-                    />
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {Math.round((budget.spent / budget.budget) * 100)}% used
-                      </span>
-                      <span className={budget.spent > budget.budget ? "text-red-500" : "text-green-500"}>
-                        ${budget.budget - budget.spent} remaining
-                      </span>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Progress 
+                        value={(budget.spent / budget.amount) * 100} 
+                        className="h-3"
+                      />
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {Math.round((budget.spent / budget.amount) * 100)}% used
+                        </span>
+                        <span className={budget.spent > budget.amount ? "text-red-500" : "text-green-500"}>
+                          ${(budget.amount - budget.spent).toFixed(2)} remaining
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <CreateBudgetForm 
+            open={createDialogOpen}
+            onOpenChange={setCreateDialogOpen}
+            onSubmit={addBudget}
+          />
         </main>
       </div>
     </div>

@@ -10,7 +10,6 @@ import { useDashboardMetrics } from "@/hooks/use-dashboard-metrics";
 import { useQuickStats } from "@/hooks/use-quick-stats";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AddTransactionForm } from "@/components/forms/add-transaction-form";
-import { InvoiceForm } from "@/components/forms/invoice-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -109,7 +108,10 @@ const Index = () => {
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mb-8">
             <AddTransactionForm />
-            <InvoiceForm />
+            <Button variant="outline" onClick={() => navigate("/invoices")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Invoice
+            </Button>
             <Button variant="outline" onClick={handleExportData}>
               <Download className="mr-2 h-4 w-4" />
               Export Data

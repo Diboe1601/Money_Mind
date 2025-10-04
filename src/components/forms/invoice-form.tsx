@@ -13,47 +13,42 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 
 const invoiceSchema = z.object({
-  client: z.string().min(1, "Client name is required"),
-  amount: z.string().min(1, "Amount is required"),
-  description: z.string().min(1, "Description is required"),
-  dueDate: z.string().min(1, "Due date is required"),
-  status: z.enum(["draft", "sent", "paid"]),
+  invoice_number: z.string().min(1, "Invoice number is required"),
+  client_name: z.string().min(1, "Client name is required"),
+  amount: z.number().min(0.01, "Amount must be greater than 0"),
+  description: z.string().optional(),
+  due_date: z.string().min(1, "Due date is required"),
+  status: z.enum(["draft", "pending", "paid", "overdue"]),
 });
 
 type InvoiceFormData = z.infer<typeof invoiceSchema>;
 
-export function InvoiceForm() {
+interface InvoiceFormProps {
+  onCreateInvoice: (data: InvoiceFormData) => Promise<void>;
+}
+
+export function InvoiceForm({ onCreateInvoice }: InvoiceFormProps) {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
-      client: "",
-      amount: "",
+      invoice_number: "",
+      client_name: "",
+      amount: 0,
       description: "",
-      dueDate: "",
+      due_date: "",
       status: "draft",
     },
   });
 
   const onSubmit = async (data: InvoiceFormData) => {
     try {
-      // For now, just show success message
-      // In a real app, you'd save to database
-      toast({
-        title: "Invoice created",
-        description: `Invoice for ${data.client} has been created successfully.`,
-      });
-      
+      await onCreateInvoice(data);
       form.reset();
       setOpen(false);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create invoice. Please try again.",
-        variant: "destructive",
-      });
+      // Error handled in hook
     }
   };
 
@@ -74,33 +69,51 @@ export function InvoiceForm() {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="client"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Client Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter client name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="invoice_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Invoice Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="INV-001" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="client_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Client Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Acme Corp" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        step="0.01" 
+                        placeholder="0.00" 
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             
             <FormField
               control={form.control}
@@ -116,9 +129,9 @@ export function InvoiceForm() {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="dueDate"
+              <FormField
+                control={form.control}
+                name="due_date"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Due Date</FormLabel>
@@ -144,8 +157,9 @@ export function InvoiceForm() {
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="sent">Sent</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="paid">Paid</SelectItem>
+                      <SelectItem value="overdue">Overdue</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

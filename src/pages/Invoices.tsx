@@ -4,41 +4,24 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, CreditCard, Eye, Download } from "lucide-react";
+import { Plus, CreditCard, Eye, Download, Loader2 } from "lucide-react";
+import { InvoiceForm } from "@/components/forms/invoice-form";
+import { useInvoices } from "@/hooks/use-invoices";
+import { generateInvoicePDF } from "@/lib/invoice-generator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Invoices = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [viewInvoice, setViewInvoice] = useState<any>(null);
+  const { invoices, loading, addInvoice } = useInvoices();
 
-  const invoices = [
-    {
-      id: "INV-001",
-      client: "Acme Corp",
-      amount: 2500,
-      status: "paid",
-      date: "2024-01-15",
-    },
-    {
-      id: "INV-002",
-      client: "TechStart Inc",
-      amount: 1800,
-      status: "pending",
-      date: "2024-01-20",
-    },
-    {
-      id: "INV-003",
-      client: "Global Solutions",
-      amount: 3200,
-      status: "overdue",
-      date: "2024-01-10",
-    },
-    {
-      id: "INV-004",
-      client: "Digital Agency",
-      amount: 1200,
-      status: "draft",
-      date: "2024-01-25",
-    },
-  ];
+  const handleCreateInvoice = async (data: any) => {
+    await addInvoice(data);
+  };
+
+  const handleDownload = (invoice: any) => {
+    generateInvoicePDF(invoice);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -63,10 +46,7 @@ const Invoices = () => {
                 Manage your billing and invoicing
               </p>
             </div>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Invoice
-            </Button>
+            <InvoiceForm onCreateInvoice={handleCreateInvoice} />
           </div>
           
           <Card>
@@ -77,41 +57,118 @@ const Invoices = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {invoices.map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <CreditCard className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="font-medium">{invoice.id}</p>
-                        <p className="text-sm text-muted-foreground">{invoice.client}</p>
+              {loading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : invoices.length === 0 ? (
+                <div className="text-center p-8 text-muted-foreground">
+                  No invoices yet. Create your first invoice to get started.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {invoices.map((invoice) => (
+                    <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-4">
+                        <CreditCard className="h-8 w-8 text-primary" />
+                        <div>
+                          <p className="font-medium">{invoice.invoice_number}</p>
+                          <p className="text-sm text-muted-foreground">{invoice.client_name}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-medium">${invoice.amount.toLocaleString()}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(invoice.due_date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge className={getStatusColor(invoice.status)}>
+                          {invoice.status}
+                        </Badge>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setViewInvoice(invoice)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDownload(invoice)}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="font-medium">${invoice.amount.toLocaleString()}</p>
-                        <p className="text-sm text-muted-foreground">{invoice.date}</p>
-                      </div>
-                      <Badge className={getStatusColor(invoice.status)}>
-                        {invoice.status}
-                      </Badge>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </main>
       </div>
+
+      <Dialog open={!!viewInvoice} onOpenChange={() => setViewInvoice(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Invoice Details</DialogTitle>
+          </DialogHeader>
+          {viewInvoice && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Invoice Number</p>
+                  <p className="font-medium">{viewInvoice.invoice_number}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <Badge className={getStatusColor(viewInvoice.status)}>
+                    {viewInvoice.status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Client</p>
+                  <p className="font-medium">{viewInvoice.client_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Amount</p>
+                  <p className="font-medium">${viewInvoice.amount.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Created Date</p>
+                  <p className="font-medium">
+                    {new Date(viewInvoice.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Due Date</p>
+                  <p className="font-medium">
+                    {new Date(viewInvoice.due_date).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              {viewInvoice.description && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Description</p>
+                  <p className="font-medium">{viewInvoice.description}</p>
+                </div>
+              )}
+              <Button 
+                onClick={() => handleDownload(viewInvoice)}
+                className="w-full"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download PDF
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,29 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface Client {
-  id: string;
-  user_id: string;
-  name: string;
-  company: string;
-  email: string;
-  phone: string;
-  avatar_url?: string;
-  created_at: string;
-  updated_at: string;
-}
+type Client = Database["public"]["Tables"]["clients"]["Row"];
+type ClientInsert = Database["public"]["Tables"]["clients"]["Insert"];
+type ClientUpdate = Database["public"]["Tables"]["clients"]["Update"];
 
 export function useClients() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: clients = [], isLoading } = useQuery({
+  const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       const { data, error } = await supabase
         .from("clients")
         .select("*")
@@ -35,7 +25,7 @@ export function useClients() {
   });
 
   const createClient = useMutation({
-    mutationFn: async (newClient: Omit<Client, "id" | "user_id" | "created_at" | "updated_at">) => {
+    mutationFn: async (newClient: ClientInsert) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -51,8 +41,8 @@ export function useClients() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast({
-        title: "Client created",
-        description: "The client has been created successfully.",
+        title: "Success",
+        description: "Client created successfully",
       });
     },
     onError: (error) => {
@@ -65,7 +55,7 @@ export function useClients() {
   });
 
   const updateClient = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Client> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: ClientUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from("clients")
         .update(updates)
@@ -79,8 +69,8 @@ export function useClients() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast({
-        title: "Client updated",
-        description: "The client has been updated successfully.",
+        title: "Success",
+        description: "Client updated successfully",
       });
     },
     onError: (error) => {
@@ -104,8 +94,8 @@ export function useClients() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast({
-        title: "Client deleted",
-        description: "The client has been deleted successfully.",
+        title: "Success",
+        description: "Client deleted successfully",
       });
     },
     onError: (error) => {

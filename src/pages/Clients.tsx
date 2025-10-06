@@ -4,15 +4,25 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Mail, Phone, Users, Eye, Edit } from "lucide-react";
+import { Users, Mail, Phone } from "lucide-react";
 import { useClients } from "@/hooks/use-clients";
 import { ClientForm } from "@/components/forms/client-form";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ClientDetailsDialog } from "@/components/client-details-dialog";
+import type { Database } from "@/integrations/supabase/types";
+
+type Client = Database["public"]["Tables"]["clients"]["Row"];
 
 const Clients = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [viewClient, setViewClient] = useState<any>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  
   const { clients, isLoading, createClient, updateClient } = useClients();
+
+  const handleViewClient = (client: Client) => {
+    setSelectedClient(client);
+    setViewDialogOpen(true);
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -27,25 +37,25 @@ const Clients = () => {
                 Manage your client relationships
               </p>
             </div>
-            <ClientForm onCreateClient={createClient} />
+            <ClientForm onSubmit={createClient} />
           </div>
           
           {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-muted-foreground">Loading clients...</p>
+            <div className="text-center py-12 text-muted-foreground">
+              Loading clients...
             </div>
-          ) : clients.length === 0 ? (
-            <div className="flex justify-center items-center h-64">
-              <p className="text-muted-foreground">No clients yet. Create your first client to get started.</p>
+          ) : clients?.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No clients yet. Add your first client to get started.
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {clients.map((client) => (
+              {clients?.map((client) => (
                 <Card key={client.id}>
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src={client.avatar_url} />
+                        <AvatarImage src={client.avatar_url || undefined} />
                         <AvatarFallback>
                           <Users className="h-6 w-6" />
                         </AvatarFallback>
@@ -60,7 +70,7 @@ const Clients = () => {
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-sm">
                         <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span className="truncate">{client.email}</span>
+                        <span>{client.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Phone className="h-4 w-4 text-muted-foreground" />
@@ -71,19 +81,21 @@ const Clients = () => {
                           variant="outline" 
                           size="sm" 
                           className="flex-1"
-                          onClick={() => setViewClient(client)}
+                          onClick={() => handleViewClient(client)}
                         >
-                          <Eye className="mr-1 h-3 w-3" />
                           View
                         </Button>
                         <ClientForm
-                          client={client}
-                          onUpdateClient={async (data) => {
-                            await updateClient({ id: client.id, ...data });
+                          onSubmit={(data) => updateClient({ id: client.id, ...data })}
+                          initialData={{
+                            name: client.name,
+                            company: client.company,
+                            email: client.email,
+                            phone: client.phone,
+                            avatar_url: client.avatar_url || undefined,
                           }}
                           trigger={
                             <Button variant="outline" size="sm" className="flex-1">
-                              <Edit className="mr-1 h-3 w-3" />
                               Edit
                             </Button>
                           }
@@ -96,40 +108,11 @@ const Clients = () => {
             </div>
           )}
           
-          <Dialog open={!!viewClient} onOpenChange={() => setViewClient(null)}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Client Details</DialogTitle>
-                <DialogDescription>Complete information for {viewClient?.name}</DialogDescription>
-              </DialogHeader>
-              {viewClient && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src={viewClient.avatar_url} />
-                      <AvatarFallback>
-                        <Users className="h-8 w-8" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-xl font-semibold">{viewClient.name}</h3>
-                      <p className="text-muted-foreground">{viewClient.company}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{viewClient.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{viewClient.phone}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
+          <ClientDetailsDialog
+            client={selectedClient}
+            open={viewDialogOpen}
+            onOpenChange={setViewDialogOpen}
+          />
         </main>
       </div>
     </div>

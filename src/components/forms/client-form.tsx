@@ -7,47 +7,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus } from "lucide-react";
-import { Client } from "@/hooks/use-clients";
 
 const clientSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  company: z.string().min(1, "Company is required").max(100, "Company must be less than 100 characters"),
-  email: z.string().email("Invalid email address").max(255, "Email must be less than 255 characters"),
-  phone: z.string().min(1, "Phone is required").max(20, "Phone must be less than 20 characters"),
+  name: z.string().min(1, "Name is required"),
+  company: z.string().min(1, "Company is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(1, "Phone is required"),
   avatar_url: z.string().optional(),
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
 
 interface ClientFormProps {
-  onCreateClient?: (data: ClientFormData) => Promise<any>;
-  onUpdateClient?: (data: ClientFormData) => Promise<any>;
-  client?: Client;
+  onSubmit: (data: ClientFormData) => Promise<any>;
+  initialData?: ClientFormData;
   trigger?: React.ReactNode;
 }
 
-export function ClientForm({ onCreateClient, onUpdateClient, client, trigger }: ClientFormProps) {
+export function ClientForm({ onSubmit, initialData, trigger }: ClientFormProps) {
   const [open, setOpen] = useState(false);
-  const isEditing = !!client;
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientSchema),
-    defaultValues: {
-      name: client?.name || "",
-      company: client?.company || "",
-      email: client?.email || "",
-      phone: client?.phone || "",
-      avatar_url: client?.avatar_url || "",
+    defaultValues: initialData || {
+      name: "",
+      company: "",
+      email: "",
+      phone: "",
+      avatar_url: "",
     },
   });
 
-  const onSubmit = async (data: ClientFormData) => {
+  const handleSubmit = async (data: ClientFormData) => {
     try {
-      if (isEditing && onUpdateClient) {
-        await onUpdateClient(data);
-      } else if (onCreateClient) {
-        await onCreateClient(data);
-      }
+      await onSubmit(data);
       form.reset();
       setOpen(false);
     } catch (error) {
@@ -67,13 +60,13 @@ export function ClientForm({ onCreateClient, onUpdateClient, client, trigger }: 
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Client" : "Add New Client"}</DialogTitle>
+          <DialogTitle>{initialData ? "Edit Client" : "Add New Client"}</DialogTitle>
           <DialogDescription>
-            {isEditing ? "Update client information." : "Add a new client to your list."}
+            {initialData ? "Update client information" : "Add a new client to your database"}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -133,7 +126,7 @@ export function ClientForm({ onCreateClient, onUpdateClient, client, trigger }: 
                 <FormItem>
                   <FormLabel>Avatar URL (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://example.com/avatar.jpg" {...field} />
+                    <Input placeholder="https://..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,7 +137,9 @@ export function ClientForm({ onCreateClient, onUpdateClient, client, trigger }: 
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">{isEditing ? "Update" : "Create"} Client</Button>
+              <Button type="submit">
+                {initialData ? "Update" : "Create"} Client
+              </Button>
             </div>
           </form>
         </Form>

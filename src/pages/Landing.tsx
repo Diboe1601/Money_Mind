@@ -9,17 +9,25 @@ import {
   Zap, 
   Users,
   TrendingUp,
-  PieChart,
-  CreditCard,
-  FileText,
-  CheckCircle
+  CheckCircle,
+  Home,
+  HelpCircle,
+  Info,
+  Mail
 } from "lucide-react";
 
 const Landing = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-dark">
       {/* Header */}
-      <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated">
+      <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated sticky top-0 z-50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
@@ -28,16 +36,43 @@ const Landing = () => {
             <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
           </div>
           
-          <div className="flex gap-3">
-            <Link to="/signup">
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => scrollToSection('home')}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Home</span>
+            </button>
+            <button 
+              onClick={() => scrollToSection('how-it-works')}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <HelpCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">How it Works</span>
+            </button>
+            <button 
+              onClick={() => scrollToSection('about')}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Info className="h-4 w-4" />
+              <span className="hidden sm:inline">About</span>
+            </button>
+            <button 
+              onClick={() => scrollToSection('contact')}
+              className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              <span className="hidden sm:inline">Contact</span>
+            </button>
+            <Link to="/auth">
               <Button variant="outline" className="border-border/50 hover:bg-background/10">
-                Sign Up
+                Sign In
               </Button>
             </Link>
             <Link to="/auth">
               <Button className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
-                Sign In
-                <ArrowRight className="ml-2 h-4 w-4" />
+                Sign Up
               </Button>
             </Link>
           </div>
@@ -45,7 +80,7 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20 px-6">
+      <section id="home" className="py-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold font-heading text-foreground mb-6">
             Master Your Business
@@ -67,6 +102,52 @@ const Landing = () => {
             <Button size="lg" variant="outline">
               Watch Demo
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 px-6 bg-gradient-card">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-4">
+              How MoneyMind Works
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Get started in minutes with our simple 3-step process
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+              <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white font-bold text-2xl">1</span>
+              </div>
+              <h3 className="text-xl font-semibold font-heading text-foreground mb-3">Sign Up</h3>
+              <p className="text-muted-foreground">
+                Create your free account in seconds. No credit card required to get started.
+              </p>
+            </div>
+
+            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+              <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white font-bold text-2xl">2</span>
+              </div>
+              <h3 className="text-xl font-semibold font-heading text-foreground mb-3">Connect</h3>
+              <p className="text-muted-foreground">
+                Add your transactions and set up budgets. Our AI helps categorize everything automatically.
+              </p>
+            </div>
+
+            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+              <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-white font-bold text-2xl">3</span>
+              </div>
+              <h3 className="text-xl font-semibold font-heading text-foreground mb-3">Thrive</h3>
+              <p className="text-muted-foreground">
+                Get insights, track progress, and watch your financial goals become reality.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -118,8 +199,40 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* About Section */}
+      <section id="about" className="py-20 px-6 bg-gradient-card">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-6">
+                About MoneyMind
+              </h2>
+              <p className="text-lg text-muted-foreground mb-4">
+                MoneyMind was created with a simple mission: to make financial management accessible, 
+                intuitive, and powerful for everyone.
+              </p>
+              <p className="text-lg text-muted-foreground mb-4">
+                We believe that everyone deserves the tools to understand and control their finances. 
+                Our AI-powered platform combines cutting-edge technology with user-friendly design to 
+                help you make smarter financial decisions.
+              </p>
+              <p className="text-lg text-muted-foreground">
+                Whether you're tracking daily expenses, managing budgets, or planning for the future, 
+                MoneyMind is your trusted partner on the journey to financial wellness.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <StatCard number="50K+" label="Transactions Processed" />
+              <StatCard number="1000+" label="Happy Businesses" />
+              <StatCard number="99.9%" label="Uptime Guarantee" />
+              <StatCard number="24/7" label="Support Available" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits Section */}
-      <section className="py-20 px-6 bg-gradient-card">
+      <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -150,10 +263,78 @@ const Landing = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <StatCard number="50K+" label="Transactions Processed" />
-              <StatCard number="1000+" label="Happy Businesses" />
-              <StatCard number="99.9%" label="Uptime Guarantee" />
-              <StatCard number="24/7" label="Support Available" />
+              <StatCard number="50K+" label="Active Users" />
+              <StatCard number="$2M+" label="Managed Monthly" />
+              <StatCard number="98%" label="Satisfaction Rate" />
+              <StatCard number="24/7" label="Customer Support" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 px-6 bg-gradient-card">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-4">
+              Get in Touch
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Have questions? We'd love to hear from you.
+            </p>
+          </div>
+
+          <div className="bg-background/50 rounded-lg p-8 border border-border/50">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-xl font-semibold font-heading text-foreground mb-4">Contact Information</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <Mail className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <p className="font-medium text-foreground">Email</p>
+                      <p className="text-muted-foreground">support@moneymind.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <Users className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <p className="font-medium text-foreground">Community</p>
+                      <p className="text-muted-foreground">Join our Discord server</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <HelpCircle className="h-5 w-5 text-primary mt-1" />
+                    <div>
+                      <p className="font-medium text-foreground">Help Center</p>
+                      <p className="text-muted-foreground">Visit our documentation</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-semibold font-heading text-foreground mb-4">Quick Message</h3>
+                <form className="space-y-4">
+                  <div>
+                    <input 
+                      type="email" 
+                      placeholder="Your email" 
+                      className="w-full px-4 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <textarea 
+                      placeholder="Your message" 
+                      rows={4}
+                      className="w-full px-4 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:border-primary resize-none"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-gradient-primary hover:bg-primary-hover">
+                    Send Message
+                  </Button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -214,7 +395,7 @@ const BenefitItem = ({ icon, title, description }: { icon: React.ReactNode; titl
 );
 
 const StatCard = ({ number, label }: { number: string; label: string }) => (
-  <div className="bg-gradient-card rounded-lg p-6 shadow-card text-center">
+  <div className="bg-background/50 rounded-lg p-6 border border-border/50 text-center">
     <div className="text-2xl font-bold text-primary mb-2">{number}</div>
     <div className="text-sm text-muted-foreground">{label}</div>
   </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ContactForm } from "@/components/forms/contact-form";
 import { 
   ArrowRight, 
   BarChart3, 
@@ -318,25 +319,7 @@ const Landing = () => {
 
               <div>
                 <h3 className="text-xl font-semibold font-heading text-foreground mb-4">Quick Message</h3>
-                <form className="space-y-4">
-                  <div>
-                    <input 
-                      type="email" 
-                      placeholder="Your email" 
-                      className="w-full px-4 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <textarea 
-                      placeholder="Your message" 
-                      rows={4}
-                      className="w-full px-4 py-2 bg-background border border-border/50 rounded-lg focus:outline-none focus:border-primary resize-none"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full bg-gradient-primary hover:bg-primary-hover">
-                    Send Message
-                  </Button>
-                </form>
+                <ContactForm />
               </div>
             </div>
           </div>

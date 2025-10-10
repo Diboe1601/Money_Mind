@@ -36,35 +36,38 @@ const Landing = () => {
             <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
           </div>
           
-          <div className="flex items-center gap-6">
+          <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center gap-6">
             <button 
               onClick={() => scrollToSection('home')}
               className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
             >
               <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Home</span>
+              <span>Home</span>
             </button>
             <button 
               onClick={() => scrollToSection('how-it-works')}
               className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
             >
               <HelpCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">How it Works</span>
+              <span>How it Works</span>
             </button>
             <button 
               onClick={() => scrollToSection('about')}
               className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
             >
               <Info className="h-4 w-4" />
-              <span className="hidden sm:inline">About</span>
+              <span>About</span>
             </button>
             <button 
               onClick={() => scrollToSection('contact')}
               className="flex items-center space-x-1 text-muted-foreground hover:text-primary transition-colors"
             >
               <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Contact</span>
+              <span>Contact</span>
             </button>
+          </div>
+
+          <div className="flex items-center gap-3">
             <Link to="/auth">
               <Button variant="outline" className="border-border/50 hover:bg-background/10">
                 Sign In

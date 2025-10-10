@@ -219,13 +219,13 @@ const Auth = () => {
 
             <div className="mt-6 text-center">
               <p className="text-muted-foreground">
-                {isSignUp ? "Already have an account?" : "Don't have an account?"}
-                <button
-                  onClick={() => setIsSignUp(!isSignUp)}
+                Don't have an account?
+                <Link
+                  to="/signup"
                   className="ml-2 text-primary hover:text-primary-hover font-medium transition-colors"
                 >
-                  {isSignUp ? "Sign In" : "Sign Up"}
-                </button>
+                  Sign Up
+                </Link>
               </p>
             </div>
           </div>

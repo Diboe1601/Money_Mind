@@ -70,7 +70,7 @@ const Landing = () => {
                 Sign In
               </Button>
             </Link>
-            <Link to="/auth">
+            <Link to="/signup">
               <Button className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
                 Sign Up
               </Button>
@@ -93,7 +93,7 @@ const Landing = () => {
             Track transactions, generate insights, and maintain accurate financial records with ease.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth">
+            <Link to="/signup">
               <Button size="lg" className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -349,7 +349,7 @@ const Landing = () => {
           <p className="text-xl text-muted-foreground mb-8">
             Join thousands of businesses already using MoneyMind to streamline their finances
           </p>
-          <Link to="/auth">
+          <Link to="/signup">
             <Button size="lg" className="bg-gradient-primary hover:bg-primary-hover shadow-elevated">
               Start Your Free Trial
               <ArrowRight className="ml-2 h-4 w-4" />

@@ -13,6 +13,7 @@ import { AddTransactionForm } from "@/components/forms/add-transaction-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import BlurText from "@/components/ui/blur-text";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -72,9 +73,13 @@ const Index = () => {
         <main className="flex-1 overflow-y-auto p-6">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold font-heading text-foreground mb-2">
-              Welcome back{userName && `, ${userName}`}! 👋
-            </h1>
+            <BlurText
+              text={`Welcome back${userName ? `, ${userName}` : ''}! 👋`}
+              delay={150}
+              animateBy="words"
+              direction="top"
+              className="text-3xl font-bold font-heading text-foreground mb-2"
+            />
             <p className="text-muted-foreground">
               Here's what's happening with your finances today.
             </p>

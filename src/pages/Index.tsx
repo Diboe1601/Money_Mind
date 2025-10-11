@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import BlurText from "@/components/ui/blur-text";
+import MagicBento from "@/components/ui/magic-bento";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -148,6 +149,22 @@ const Index = () => {
               <Eye className="mr-2 h-4 w-4" />
               View Reports
             </Button>
+          </div>
+
+          {/* Magic Bento Grid */}
+          <div className="mb-8 flex justify-center">
+            <MagicBento 
+              textAutoHide={true}
+              enableStars={true}
+              enableSpotlight={true}
+              enableBorderGlow={true}
+              enableTilt={true}
+              enableMagnetism={true}
+              clickEffect={true}
+              spotlightRadius={300}
+              particleCount={12}
+              glowColor="132, 0, 255"
+            />
           </div>
 
           {/* Charts Section */}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { MetricCard } from "@/components/ui/metric-card";
@@ -12,6 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AddTransactionForm } from "@/components/forms/add-transaction-form";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -24,10 +25,32 @@ import {
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userName, setUserName] = useState<string>("");
   const { metrics, loading } = useDashboardMetrics();
   const { stats, loading: statsLoading } = useQuickStats();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (profile?.first_name && profile?.last_name) {
+          setUserName(`${profile.first_name} ${profile.last_name}`);
+        } else if (profile?.first_name) {
+          setUserName(profile.first_name);
+        }
+      }
+    };
+    
+    fetchUserProfile();
+  }, []);
 
   const handleExportData = () => {
     toast({
@@ -50,7 +73,7 @@ const Index = () => {
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold font-heading text-foreground mb-2">
-              Welcome back, Alex! 👋
+              Welcome back{userName && `, ${userName}`}! 👋
             </h1>
             <p className="text-muted-foreground">
               Here's what's happening with your finances today.

@@ -3,7 +3,6 @@ import { Header } from "@/components/layout/header";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentTransactions } from "@/components/recent-transactions";
-import MagicBento from "@/components/ui/magic-bento";
 
 const Transactions = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -19,21 +18,6 @@ const Transactions = () => {
             <p className="text-muted-foreground">
               View and manage all your financial transactions
             </p>
-          </div>
-
-          <div className="flex justify-center mb-6">
-            <MagicBento 
-              textAutoHide={true}
-              enableStars={true}
-              enableSpotlight={true}
-              enableBorderGlow={true}
-              enableTilt={true}
-              enableMagnetism={true}
-              clickEffect={true}
-              spotlightRadius={300}
-              particleCount={12}
-              glowColor="132, 0, 255"
-            />
           </div>
           
           <Card>

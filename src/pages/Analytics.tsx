@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RevenueChart } from "@/components/charts/revenue-chart";
 import { ExpenseBreakdown } from "@/components/charts/expense-breakdown";
-import MagicBento from "@/components/ui/magic-bento";
 
 const Analytics = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -20,21 +19,6 @@ const Analytics = () => {
             <p className="text-muted-foreground">
               Insights and trends from your financial data
             </p>
-          </div>
-
-          <div className="flex justify-center mb-6">
-            <MagicBento 
-              textAutoHide={true}
-              enableStars={true}
-              enableSpotlight={true}
-              enableBorderGlow={true}
-              enableTilt={true}
-              enableMagnetism={true}
-              clickEffect={true}
-              spotlightRadius={300}
-              particleCount={12}
-              glowColor="132, 0, 255"
-            />
           </div>
           
           <div className="grid gap-6 md:grid-cols-2">

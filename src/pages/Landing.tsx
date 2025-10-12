@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ContactForm } from "@/components/forms/contact-form";
+import SpotlightCard from "@/components/ui/spotlight-card";
 import { 
   ArrowRight, 
   BarChart3, 
@@ -123,7 +124,7 @@ const Landing = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+            <SpotlightCard className="p-8 text-center" spotlightColor="rgba(132, 94, 194, 0.3)">
               <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-2xl">1</span>
               </div>
@@ -131,9 +132,9 @@ const Landing = () => {
               <p className="text-muted-foreground">
                 Create your free account in seconds. No credit card required to get started.
               </p>
-            </div>
+            </SpotlightCard>
 
-            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+            <SpotlightCard className="p-8 text-center" spotlightColor="rgba(132, 94, 194, 0.3)">
               <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-2xl">2</span>
               </div>
@@ -141,9 +142,9 @@ const Landing = () => {
               <p className="text-muted-foreground">
                 Add your transactions and set up budgets. Our AI helps categorize everything automatically.
               </p>
-            </div>
+            </SpotlightCard>
 
-            <div className="bg-background/50 rounded-lg p-8 text-center border border-border/50">
+            <SpotlightCard className="p-8 text-center" spotlightColor="rgba(132, 94, 194, 0.3)">
               <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-white font-bold text-2xl">3</span>
               </div>
@@ -151,7 +152,7 @@ const Landing = () => {
               <p className="text-muted-foreground">
                 Get insights, track progress, and watch your financial goals become reality.
               </p>
-            </div>
+            </SpotlightCard>
           </div>
         </div>
       </section>
@@ -288,7 +289,7 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="bg-background/50 rounded-lg p-8 border border-border/50">
+          <SpotlightCard className="p-8" spotlightColor="rgba(132, 94, 194, 0.3)">
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <h3 className="text-xl font-semibold font-heading text-foreground mb-4">Contact Information</h3>
@@ -322,7 +323,7 @@ const Landing = () => {
                 <ContactForm />
               </div>
             </div>
-          </div>
+          </SpotlightCard>
         </div>
       </section>
 
@@ -363,11 +364,11 @@ const Landing = () => {
 };
 
 const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
-  <div className="bg-gradient-card rounded-lg p-6 shadow-card hover:shadow-elevated transition-all duration-300">
+  <SpotlightCard className="p-6 shadow-card hover:shadow-elevated transition-all duration-300" spotlightColor="rgba(132, 94, 194, 0.25)">
     <div className="text-primary mb-4">{icon}</div>
     <h3 className="text-xl font-semibold font-heading text-foreground mb-3">{title}</h3>
     <p className="text-muted-foreground">{description}</p>
-  </div>
+  </SpotlightCard>
 );
 
 const BenefitItem = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
@@ -381,10 +382,10 @@ const BenefitItem = ({ icon, title, description }: { icon: React.ReactNode; titl
 );
 
 const StatCard = ({ number, label }: { number: string; label: string }) => (
-  <div className="bg-background/50 rounded-lg p-6 border border-border/50 text-center">
+  <SpotlightCard className="p-6 text-center" spotlightColor="rgba(132, 94, 194, 0.25)">
     <div className="text-2xl font-bold text-primary mb-2">{number}</div>
     <div className="text-sm text-muted-foreground">{label}</div>
-  </div>
+  </SpotlightCard>
 );
 
 export default Landing;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ContactForm } from "@/components/forms/contact-form";
@@ -15,10 +15,13 @@ import {
   Home,
   HelpCircle,
   Info,
-  Mail
+  Mail,
+  X
 } from "lucide-react";
 
 const Landing = () => {
+  const [showVideoModal, setShowVideoModal] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -28,13 +31,43 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-dark">
+      {/* Video Modal */}
+      {showVideoModal && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <div 
+            className="relative w-full max-w-5xl bg-gradient-card rounded-lg shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowVideoModal(false)}
+              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-colors"
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
+            <video
+              controls
+              autoPlay
+              className="w-full h-auto"
+            >
+              <source src="/MoneyMind_Demo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated sticky top-0 z-50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
-            </div>
+            <img 
+              src="/MoneyMind_Logo.png" 
+              alt="MoneyMind Logo" 
+              className="h-8 w-auto object-contain"
+            />
             <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
           </div>
           
@@ -104,7 +137,7 @@ const Landing = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" onClick={() => setShowVideoModal(true)}>
               Watch Demo
             </Button>
           </div>
@@ -349,9 +382,11 @@ const Landing = () => {
       <footer className="border-t border-border py-12 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
-            </div>
+            <img 
+              src="/MoneyMind_Logo.png" 
+              alt="MoneyMind Logo" 
+              className="h-8 w-auto object-contain"
+            />
             <span className="text-xl font-bold font-heading text-foreground">MoneyMind</span>
           </div>
           <p className="text-muted-foreground">

@@ -166,11 +166,14 @@ const SignUp = () => {
           <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             <ArrowLeft className="h-4 w-4 text-muted-foreground" />
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <span className="text-xl font-bold font-heading text-foreground">MoneyMind</span>
-            </div>
+            <img 
+              src="/MoneyMind_Logo.png" 
+              alt="MoneyMind Logo" 
+              className="h-8 w-auto object-contain"
+            />
+            <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
+          </div>
+          
           </Link>
           <Link to="/auth">
             <Button variant="outline" size="sm">Sign In</Button>

@@ -5,8 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Calendar, TrendingUp, Loader2 } from "lucide-react";
 import { useTransactions } from "@/hooks/use-transactions";
-import { generateMonthlyFinancialReport, generateTaxSummary, generatePerformanceAnalytics } from "@/lib/report-generator";
 import { toast } from "@/hooks/use-toast";
+import {
+  generateMonthlyFinancialReport,
+  generateTaxSummary,
+  generatePerformanceAnalytics
+} from "@/lib/report-generator";
 
 const Reports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -26,17 +30,17 @@ const Reports = () => {
     setGeneratingReport(reportType);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate processing
-      
+      await new Promise(resolve => setTimeout(resolve, 500)); // simulate processing delay
+
       switch (reportType) {
         case "Monthly Financial Report":
-          generateMonthlyFinancialReport(transactions);
+          await generateMonthlyFinancialReport(transactions);
           break;
         case "Tax Summary":
-          generateTaxSummary(transactions);
+          await generateTaxSummary(transactions);
           break;
         case "Performance Analytics":
-          generatePerformanceAnalytics(transactions);
+          await generatePerformanceAnalytics(transactions);
           break;
       }
 
@@ -47,7 +51,7 @@ const Reports = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to generate report",
+        description: `Failed to generate ${reportType}`,
         variant: "destructive"
       });
     } finally {
@@ -64,7 +68,7 @@ const Reports = () => {
     },
     {
       title: "Tax Summary",
-      description: "Annual tax preparation summary",
+      description: "Summary of taxable income and deductible expenses",
       icon: Calendar,
       type: "PDF",
     },
@@ -82,13 +86,15 @@ const Reports = () => {
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 p-6 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-            <p className="text-muted-foreground">
-              Generate and download financial reports
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
+              <p className="text-muted-foreground">
+                Generate and download financial reports with real-time analytics
+              </p>
+            </div>
           </div>
-          
+
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -96,7 +102,7 @@ const Reports = () => {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {reports.map((report, index) => (
-                <Card key={index}>
+                <Card key={index} className="bg-gradient-card shadow-card">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <report.icon className="h-8 w-8 text-primary" />
@@ -107,8 +113,8 @@ const Reports = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       variant="outline"
                       onClick={() => handleDownloadReport(report.title)}
                       disabled={generatingReport === report.title || transactions.length === 0}

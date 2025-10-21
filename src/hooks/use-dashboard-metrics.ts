@@ -26,17 +26,17 @@ export function useDashboardMetrics() {
     netProfit: 0,
     activeClients: 0,
     revenueChange: '+0%',
-    expensesChange: '+0%', 
+    expensesChange: '+0%',
     profitChange: '+0%',
-    clientsChange: '+0%'
+    clientsChange: '+0%',
   });
+
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [loading, setLoading] = useState(true);
 
   const calculateMetrics = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         setLoading(false);
         return;
@@ -53,19 +53,30 @@ export function useDashboardMetrics() {
       }
 
       if (!transactions || transactions.length === 0) {
+        setMetrics({
+          totalRevenue: 0,
+          totalExpenses: 0,
+          netProfit: 0,
+          activeClients: 0,
+          revenueChange: '+0%',
+          expensesChange: '+0%',
+          profitChange: '+0%',
+          clientsChange: '+0%',
+        });
+        setChartData([]);
         setLoading(false);
         return;
       }
 
-      // Calculate current month metrics
+      // Current month and year
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
 
+      // Filter for current month
       const currentMonthTransactions = transactions.filter(t => {
-        const transactionDate = new Date(t.date);
-        return transactionDate.getMonth() === currentMonth && 
-               transactionDate.getFullYear() === currentYear;
+        const date = new Date(t.date);
+        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
       });
 
       const totalRevenue = currentMonthTransactions
@@ -78,23 +89,25 @@ export function useDashboardMetrics() {
 
       const netProfit = totalRevenue - totalExpenses;
 
-      // Calculate unique clients (based on unique categories for income transactions)
+      // Active clients (based on income categories)
       const activeClients = new Set(
         currentMonthTransactions
           .filter(t => t.type === 'income')
           .map(t => t.category)
       ).size;
 
-      // Generate chart data for last 6 months
+      // Generate chart data for the last 6 months
       const chartMonths: ChartData[] = [];
       for (let i = 5; i >= 0; i--) {
         const date = new Date(currentYear, currentMonth - i, 1);
         const monthName = date.toLocaleDateString('en-US', { month: 'short' });
-        
+
         const monthTransactions = transactions.filter(t => {
           const transactionDate = new Date(t.date);
-          return transactionDate.getMonth() === date.getMonth() && 
-                 transactionDate.getFullYear() === date.getFullYear();
+          return (
+            transactionDate.getMonth() === date.getMonth() &&
+            transactionDate.getFullYear() === date.getFullYear()
+          );
         });
 
         const monthRevenue = monthTransactions
@@ -108,7 +121,7 @@ export function useDashboardMetrics() {
         chartMonths.push({
           month: monthName,
           revenue: monthRevenue,
-          expenses: monthExpenses
+          expenses: monthExpenses,
         });
       }
 
@@ -117,10 +130,10 @@ export function useDashboardMetrics() {
         totalExpenses,
         netProfit,
         activeClients,
-        revenueChange: '+12.3%', // Mock percentage changes for now
+        revenueChange: '+12.3%', // Placeholder until you implement comparison logic
         expensesChange: '+8.1%',
         profitChange: netProfit > 0 ? '+18.7%' : '-5.2%',
-        clientsChange: '+5.4%'
+        clientsChange: '+5.4%',
       });
 
       setChartData(chartMonths);
@@ -133,12 +146,29 @@ export function useDashboardMetrics() {
 
   useEffect(() => {
     calculateMetrics();
+
+    // ✅ Subscribe to real-time updates
+    const channel = supabase
+      .channel('transactions-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'transactions' },
+        () => {
+          console.log('🔄 Transactions table updated — refreshing metrics...');
+          calculateMetrics();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {
     metrics,
     chartData,
     loading,
-    refetch: calculateMetrics
+    refetch: calculateMetrics,
   };
 }

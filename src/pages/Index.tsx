@@ -47,6 +47,30 @@ const Index = () => {
         } else if (profile?.first_name) {
           setUserName(profile.first_name);
         }
+
+        // ✅ Real-time Notifications Setup
+        const channel = supabase
+          .channel("notifications")
+          .on(
+            "postgres_changes",
+            { event: "INSERT", schema: "public", table: "notifications" },
+            (payload) => {
+              const notification = payload.new;
+              console.log("🔔 New notification:", notification);
+
+              // Optional toast popup
+              toast({
+                title: notification.title || "New Notification",
+                description: notification.message,
+              });
+            }
+          )
+          .subscribe();
+
+        // Cleanup when the component unmounts
+        return () => {
+          supabase.removeChannel(channel);
+        };
       }
     };
     

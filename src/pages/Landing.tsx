@@ -52,7 +52,7 @@ const Landing = () => {
               autoPlay
               className="w-full h-auto"
             >
-              <source src="/MoneyMind_Demo.mp4" type="video/mp4" />
+              <source src={`${import.meta.env.BASE_URL}MoneyMind_Demo.mp4`} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>

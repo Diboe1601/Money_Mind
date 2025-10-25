@@ -34,11 +34,7 @@ export function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex items-center space-x-2">
-            <img 
-              src="/MoneyMind_Logo.png" 
-              alt="MoneyMind Logo" 
-              className="h-8 w-auto object-contain"
-            />
+            <img src={`${import.meta.env.BASE_URL}MoneyMind_Logo.png`} alt="MoneyMind" className="h-8 w-auto object-contain" />
             <h1 className="text-xl font-bold font-heading text-foreground">MoneyMind</h1>
           </div>
           

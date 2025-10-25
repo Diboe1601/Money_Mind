@@ -64,7 +64,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <img 
-              src="/MoneyMind_Logo.png" 
+              src={`${import.meta.env.BASE_URL}MoneyMind_Logo.png`} 
               alt="MoneyMind Logo" 
               className="h-8 w-auto object-contain"
             />
@@ -383,7 +383,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <img 
-              src="/MoneyMind_Logo.png" 
+              src={`${import.meta.env.BASE_URL}MoneyMind_Logo.png`} 
               alt="MoneyMind Logo" 
               className="h-8 w-auto object-contain"
             />

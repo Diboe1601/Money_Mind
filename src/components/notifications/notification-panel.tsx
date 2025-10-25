@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-- import { supabase } from "@/lib/supabase";
-+ import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Bell } from "lucide-react";
 import {
   DropdownMenu,

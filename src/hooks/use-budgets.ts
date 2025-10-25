@@ -61,6 +61,22 @@ export const useBudgets = () => {
         description: "Your budget has been created successfully.",
       });
       
+      // Add notification entry
+      try {
+        await supabase.from('notifications').insert([{
+          user_id: user.id,
+          title: 'Budget created',
+          description: `${budget.category} budget set to $${budget.amount.toLocaleString()} for ${budget.period}`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Budgets',
+          action_href: '/dashboard/budgets'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
+      
       return data;
     } catch (error: any) {
       toast({

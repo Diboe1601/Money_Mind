@@ -1,0 +1,325 @@
+Surname: Sello
+Initials: MK Sello
+Student Number: 202324276 
+LAB 2: 239
+
+.................
+Question 3
+.................
+
+User.cs (Models/User.cs):
+
+using System.ComponentModel.DataAnnotations;
+
+namespace SmartCampusAPI.Models
+{
+    public class User
+    {
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(120, ErrorMessage = "Name must not exceed 120 characters.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        [StringLength(200, ErrorMessage = "Email must not exceed 200 characters.")]
+        public string Email { get; set; } = string.Empty;
+
+        [StringLength(40, ErrorMessage = "Role must not exceed 40 characters.")]
+        public string Role { get; set; } = string.Empty;
+    }
+}
+
+.....................
+UserController.cs (Controllers/UserController.cs):
+.....................
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SmartCampusAPI.Data;
+using SmartCampusAPI.Models;
+
+namespace SmartCampusAPI.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UserController : ControllerBase
+    {
+        private readonly CampusContext _context;
+
+        public UserController(CampusContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser(User user)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            if (existingUser != null)
+                return BadRequest("Email already exists.");
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound("User with ID {id} not found.");
+            return Ok(user);
+        }
+
+        [HttpGet("students")]
+        public async Task<IActionResult> GetStudents()
+        {
+            var students = await _context.Users.Where(u => u.Role == "Student").ToListAsync();
+            return Ok(students);
+        }
+    }
+}
+
+.................
+CampusContext.cs (Data/CampusContext.cs):
+.................
+
+using Microsoft.EntityFrameworkCore;
+using SmartCampusAPI.Models;
+
+namespace SmartCampusAPI.Data
+{
+    public class CampusContext : DbContext
+    {
+        public CampusContext(DbContextOptions<CampusContext> options) : base(options)
+        {
+        }
+
+        public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
+    }
+}
+
+...............
+Implemented in GetStudents:
+...............
+
+var students = await _context.Users.Where(u => u.Role == "Student").ToListAsync();
+
+....................
+RegisterForm.jsx (client/src/components/RegisterForm.jsx):
+...................
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const RegisterForm = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('Student');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (name.length < 1 || !email.includes('@')) {
+      setMessage('Invalid name or email.');
+      return;
+    }
+
+    try {
+      const response = await fetch( {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, role }),
+      });
+
+      if (response.ok) {
+        setMessage('User registered successfully!');
+        setTimeout(() => navigate('/profile'), 1000);
+        setName('');
+        setEmail('');
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.message || 'Registration failed.');
+      }
+    } catch (error) {
+      setMessage('Error submitting form.');
+    }
+  };
+
+  return (
+    <div>
+      <h2>Register</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={120}
+            required
+          />
+        </div>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            maxLength={200}
+            required
+          />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
+  );
+};
+
+export default RegisterForm;
+
+..........................
+App.js (client/src/App.js):
+...........................
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import RegisterForm from './components/RegisterForm';
+import HomePage from './pages/HomePage';
+import ProfilePage from './pages/ProfilePage';
+
+function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link> | <Link to="/register">Register</Link> | <Link to="/profile">Profile</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+
+..........................
+HomePage.jsx (client/src/pages/HomePage.jsx):
+..........................
+
+import React from 'react';
+
+const HomePage = () => <h1>Welcome to Smart Campus Portal</h1>;
+
+export default HomePage;
+
+.................
+ProfilePage.jsx (client/src/pages/ProfilePage.jsx):
+.................
+
+import React from 'react';
+
+const ProfilePage = () => <h1>User Profile</h1>;
+
+export default ProfilePage;
+
+..................
+UserControllerTests.cs (Tests/UserControllerTests.cs):
+..................
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using SmartCampusAPI.Controllers;
+using SmartCampusAPI.Data;
+using SmartCampusAPI.Models;
+using Xunit;
+
+namespace SmartCampusAPI.Tests
+{
+    public class UserControllerTests
+    {
+        [Fact]
+        public async Task RegisterUser_ValidUser_ReturnsCreatedAtAction()
+        {
+
+            var options = new DbContextOptionsBuilder<CampusContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            using var context = new CampusContext(options);
+            var controller = new UserController(context);
+
+            var result = await controller.RegisterUser(user); 
+
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+            Assert.Equal(201, createdResult.StatusCode);
+            var savedUser = await context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            Assert.NotNull(savedUser);
+            Assert.Equal(user.Name, savedUser.Name);
+            Assert.Equal(user.Email, savedUser.Email);
+        }
+
+        [Fact]
+        public async Task RegisterUser_DuplicateEmail_ReturnsBadRequest()
+        {
+
+            var options = new DbContextOptionsBuilder<CampusContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            using var context = new CampusContext(options);
+            var controller = new UserController(context);
+
+            await context.Users.AddAsync(existingUser);
+            await context.SaveChangesAsync();
+
+            var result = await controller.RegisterUser(duplicateUser);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.Contains("Email already exists.", badRequestResult.Value.ToString());
+        }
+
+        [Fact]
+        public async Task RegisterUser_InvalidModel_ReturnsBadRequest()
+        {
+
+            var options = new DbContextOptionsBuilder<CampusContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            using var context = new CampusContext(options);
+            var controller = new UserController(context);
+
+            var result = await controller.RegisterUser(user);
+
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal(400, badRequestResult.StatusCode);
+            Assert.Contains("required", badRequestResult.Value.ToString().ToLower());
+        }
+    }
+}
+.................
+Database Integration:
+.................
+
+builder.Services.AddDbContext<CampusContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+

@@ -11,6 +11,7 @@ import {
   generateTaxSummary,
   generatePerformanceAnalytics
 } from "@/lib/report-generator";
+import { supabase } from "@/integrations/supabase/client";
 
 const Reports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -48,6 +49,25 @@ const Reports = () => {
         title: "Success",
         description: `${reportType} downloaded successfully`
       });
+
+      // Add notification entry
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('notifications').insert([{
+            user_id: user.id,
+            title: 'Report generated',
+            description: `${reportType} generated`,
+            type: 'success',
+            timestamp: new Date().toISOString(),
+            read: false,
+            action_label: 'View Reports',
+            action_href: '/dashboard/reports'
+          }]);
+        }
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
     } catch (error) {
       toast({
         title: "Error",

@@ -38,12 +38,25 @@ export function useClients() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast({
         title: "Success",
         description: "Client created successfully",
       });
+      // Add notification entry
+      if (created) {
+        supabase.from('notifications').insert([{
+          user_id: created.user_id,
+          title: 'Client created',
+          description: `Client ${created.name} added`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Clients',
+          action_href: '/dashboard/clients'
+        }]).catch((e) => console.error('Error adding notification:', e));
+      }
     },
     onError: (error) => {
       toast({
@@ -66,12 +79,25 @@ export function useClients() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
       toast({
         title: "Success",
         description: "Client updated successfully",
       });
+      // Add notification entry
+      if (updated) {
+        supabase.from('notifications').insert([{
+          user_id: updated.user_id,
+          title: 'Client updated',
+          description: `Client ${updated.name} updated`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Clients',
+          action_href: '/dashboard/clients'
+        }]).catch((e) => console.error('Error adding notification:', e));
+      }
     },
     onError: (error) => {
       toast({
@@ -97,6 +123,16 @@ export function useClients() {
         title: "Success",
         description: "Client deleted successfully",
       });
+      // Add notification entry
+      supabase.from('notifications').insert([{
+        title: 'Client deleted',
+        description: `A client was deleted`,
+        type: 'warning',
+        timestamp: new Date().toISOString(),
+        read: false,
+        action_label: 'View Clients',
+        action_href: '/dashboard/clients'
+      }]).catch((e) => console.error('Error adding notification:', e));
     },
     onError: (error) => {
       toast({

@@ -69,6 +69,21 @@ export const useInvoices = () => {
         title: "Success",
         description: "Invoice created successfully",
       });
+      // Add notification entry
+      try {
+        await supabase.from('notifications').insert([{
+          user_id: user.id,
+          title: 'Invoice created',
+          description: `Invoice ${data.invoice_number} for ${data.client_name} ($${data.amount.toLocaleString()})`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Invoices',
+          action_href: '/dashboard/invoices'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
       return data;
     } catch (error: any) {
       toast({

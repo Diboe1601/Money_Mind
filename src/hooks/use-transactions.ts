@@ -89,12 +89,75 @@ export function useTransactions() {
         title: "Success",
         description: "Transaction added successfully"
       });
+      // Add notification entry
+      try {
+        await supabase.from('notifications').insert([{
+          user_id: user.id,
+          title: 'Transaction added',
+          description: `${transaction.type === 'income' ? 'Income' : 'Expense'}: ${transaction.description} ($${transaction.amount.toLocaleString()})`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Transactions',
+          action_href: '/dashboard/transactions'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
     } catch (error) {
       console.error('Error:', error);
       toast({
         title: "Error",
         description: "Failed to add transaction", 
         variant: "destructive"
+      });
+    }
+  };
+
+  // NEW: Update transaction status and notify on completion
+  const updateTransactionStatus = async (id: string, status: Transaction['status']) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from('transactions')
+        .update({ status })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setTransactions(prev => prev.map(t => t.id === id ? (data as Transaction) : t));
+
+      toast({
+        title: 'Transaction updated',
+        description: `Status set to ${status}`
+      });
+
+      // If status changed to completed, insert a notification
+      if (status === 'completed') {
+        try {
+          await supabase.from('notifications').insert([{
+            user_id: user?.id,
+            title: 'Transaction completed',
+            description: `${(data as Transaction).description} marked as completed ($${(data as Transaction).amount.toLocaleString()})`,
+            type: 'success',
+            timestamp: new Date().toISOString(),
+            read: false,
+            action_label: 'View Transactions',
+            action_href: '/dashboard/transactions'
+          }]);
+        } catch (e) {
+          console.error('Error adding notification:', e);
+        }
+      }
+    } catch (error: any) {
+      console.error('Error updating transaction status:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to update transaction status',
+        variant: 'destructive'
       });
     }
   };
@@ -107,6 +170,7 @@ export function useTransactions() {
     transactions,
     loading,
     addTransaction,
+    updateTransactionStatus,
     refetch: fetchTransactions
   };
 }

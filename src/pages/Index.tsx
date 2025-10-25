@@ -61,7 +61,7 @@ const Index = () => {
               // Optional toast popup
               toast({
                 title: notification.title || "New Notification",
-                description: notification.message,
+                description: notification.description,
               });
             }
           )

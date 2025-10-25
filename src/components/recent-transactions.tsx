@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, ArrowDownRight, Eye } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Eye, CheckCircle } from "lucide-react";
 import { useTransactions } from "@/hooks/use-transactions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function RecentTransactions() {
-  const { transactions, loading } = useTransactions();
+  const { transactions, loading, updateTransactionStatus } = useTransactions();
 
   if (loading) {
     return (
@@ -92,12 +92,26 @@ export function RecentTransactions() {
                   }`}>
                     {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toLocaleString()}
                   </p>
-                  <Badge 
-                    variant={transaction.status === 'completed' ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {transaction.status}
-                  </Badge>
+                  <div className="flex items-center gap-2 justify-end">
+                    <Badge 
+                      variant={transaction.status === 'completed' ? 'default' : 'secondary'}
+                      className="text-xs"
+                    >
+                      {transaction.status}
+                    </Badge>
+                    {transaction.status !== 'completed' && (
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        className="text-xs"
+                        onClick={() => updateTransactionStatus(transaction.id, 'completed')}
+                        title="Mark as completed"
+                      >
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Complete
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))

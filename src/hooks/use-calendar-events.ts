@@ -65,6 +65,22 @@ export const useCalendarEvents = () => {
         description: "Event created successfully",
       });
 
+      // Add notification entry
+      try {
+        await supabase.from('notifications').insert([{
+          user_id: user.id,
+          title: 'Event created',
+          description: `${eventData.title}`,
+          type: 'success',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Calendar',
+          action_href: '/dashboard/calendar'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
+
       await fetchEvents();
     } catch (error: any) {
       console.error("Error adding event:", error);
@@ -90,6 +106,23 @@ export const useCalendarEvents = () => {
         description: "Event updated successfully",
       });
 
+      // Add notification entry
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('notifications').insert([{
+          user_id: user?.id,
+          title: 'Event updated',
+          description: `Event ${eventData.title ?? ''} updated`,
+          type: 'info',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Calendar',
+          action_href: '/dashboard/calendar'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
+
       await fetchEvents();
     } catch (error: any) {
       console.error("Error updating event:", error);
@@ -114,6 +147,23 @@ export const useCalendarEvents = () => {
         title: "Success",
         description: "Event deleted successfully",
       });
+
+      // Add notification entry
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('notifications').insert([{
+          user_id: user?.id,
+          title: 'Event deleted',
+          description: `An event was deleted`,
+          type: 'warning',
+          timestamp: new Date().toISOString(),
+          read: false,
+          action_label: 'View Calendar',
+          action_href: '/dashboard/calendar'
+        }]);
+      } catch (e) {
+        console.error('Error adding notification:', e);
+      }
 
       await fetchEvents();
     } catch (error: any) {

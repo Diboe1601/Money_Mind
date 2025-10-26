@@ -18,9 +18,11 @@ import {
   Mail,
   X
 } from "lucide-react";
+import { MotionConfig, motion, AnimatePresence } from "framer-motion";
 
 const Landing = () => {
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -61,7 +63,7 @@ const Landing = () => {
 
       {/* Header */}
       <header className="bg-gradient-card border-b border-border px-6 py-4 shadow-elevated sticky top-0 z-50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <img 
               src={`${import.meta.env.BASE_URL}MoneyMind_Logo.png`} 
@@ -102,7 +104,16 @@ const Landing = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Mobile Hamburger (only on mobile) */}
+          <div className="md:hidden">
+            <AnimatedHamburgerButton
+              active={mobileMenuOpen}
+              onToggle={() => setMobileMenuOpen((pv) => !pv)}
+            />
+          </div>
+
+          {/* Desktop Auth Buttons (hidden on mobile) */}
+          <div className="hidden md:flex items-center gap-3">
             <Link to="/auth">
               <Button variant="outline" className="border-border/50 hover:bg-background/10">
                 Sign In
@@ -114,6 +125,32 @@ const Landing = () => {
               </Button>
             </Link>
           </div>
+
+          {/* Mobile Dropdown Menu */}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="absolute top-16 right-6 z-50 w-44 rounded-lg border border-border bg-gradient-card shadow-elevated p-3"
+              >
+                <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="w-full mb-2 border-border/50 hover:bg-background/10"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full bg-gradient-primary hover:bg-primary-hover shadow-elevated">
+                    Sign Up
+                  </Button>
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
@@ -422,5 +459,67 @@ const StatCard = ({ number, label }: { number: string; label: string }) => (
     <div className="text-sm text-muted-foreground">{label}</div>
   </SpotlightCard>
 );
+
+// Mobile Animated Hamburger Button (framer-motion)
+type AnimatedHamburgerButtonProps = { active: boolean; onToggle: () => void };
+
+const VARIANTS = {
+  top: {
+    open: {
+      rotate: ["0deg", "0deg", "45deg"],
+      top: ["35%", "50%", "50%"],
+    },
+    closed: {
+      rotate: ["45deg", "0deg", "0deg"],
+      top: ["50%", "50%", "35%"],
+    },
+  },
+  middle: {
+    open: { rotate: ["0deg", "0deg", "-45deg"] },
+    closed: { rotate: ["-45deg", "0deg", "0deg"] },
+  },
+  bottom: {
+    open: {
+      rotate: ["0deg", "0deg", "45deg"],
+      bottom: ["35%", "50%", "50%"],
+      left: "50%",
+    },
+    closed: {
+      rotate: ["45deg", "0deg", "0deg"],
+      bottom: ["50%", "50%", "35%"],
+      left: "calc(50% + 8px)",
+    },
+  },
+};
+
+const AnimatedHamburgerButton: React.FC<AnimatedHamburgerButtonProps> = ({ active, onToggle }) => {
+  return (
+    <MotionConfig transition={{ duration: 0.5, ease: "easeInOut" }}>
+      <motion.button
+        initial={false}
+        animate={active ? "open" : "closed"}
+        onClick={onToggle}
+        aria-label="Toggle menu"
+        className="relative h-10 w-10 rounded-full bg-white/0 transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
+      >
+        <motion.span
+          variants={VARIANTS.top}
+          className="absolute h-0.5 w-6 bg-white"
+          style={{ y: "-50%", left: "50%", x: "-50%", top: "35%" }}
+        />
+        <motion.span
+          variants={VARIANTS.middle}
+          className="absolute h-0.5 w-6 bg-white"
+          style={{ left: "50%", x: "-50%", top: "50%", y: "-50%" }}
+        />
+        <motion.span
+          variants={VARIANTS.bottom}
+          className="absolute h-0.5 w-4 bg-white"
+          style={{ x: "-50%", y: "50%", bottom: "35%", left: "calc(50% + 8px)" }}
+        />
+      </motion.button>
+    </MotionConfig>
+  );
+};
 
 export default Landing;

@@ -133,8 +133,56 @@ const Landing = () => {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="absolute top-16 right-6 z-50 w-44 rounded-lg border border-border bg-gradient-card shadow-elevated p-3 md:hidden"
+                className="absolute top-16 right-6 z-50 w-48 rounded-lg border border-border bg-gradient-card shadow-elevated p-3 md:hidden"
               >
+                {/* Navigation Items */}
+                <div className="mb-3 space-y-1">
+                  <button 
+                    onClick={() => {
+                      scrollToSection('home');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-left text-muted-foreground hover:text-primary hover:bg-background/10 rounded-md transition-colors"
+                  >
+                    <Home className="h-4 w-4" />
+                    <span>Home</span>
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection('how-it-works');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-left text-muted-foreground hover:text-primary hover:bg-background/10 rounded-md transition-colors"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    <span>How it Works</span>
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection('about');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-left text-muted-foreground hover:text-primary hover:bg-background/10 rounded-md transition-colors"
+                  >
+                    <Info className="h-4 w-4" />
+                    <span>About</span>
+                  </button>
+                  <button 
+                    onClick={() => {
+                      scrollToSection('contact');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-left text-muted-foreground hover:text-primary hover:bg-background/10 rounded-md transition-colors"
+                  >
+                    <Mail className="h-4 w-4" />
+                    <span>Contact</span>
+                  </button>
+                </div>
+                
+                {/* Divider */}
+                <div className="border-t border-border/50 mb-3"></div>
+                
+                {/* Auth Buttons */}
                 <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                   <Button
                     variant="outline"

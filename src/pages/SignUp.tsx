@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ArrowLeft, CheckCircle2, XCircle, User, Mail, Lock } from "lucide-react";
 import { z } from "zod";
+import { BarLoaderOverlay } from "@/components/ui/bar-loader";
 
 const signUpSchema = z.object({
   firstName: z.string().trim().min(2, "First name must be at least 2 characters").max(50, "First name must be less than 50 characters"),
@@ -35,6 +36,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: "", color: "" });
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -107,6 +109,7 @@ const SignUp = () => {
           title: "Success!",
           description: "Please check your email to confirm your account.",
         });
+        setShowLoader(true);
         setTimeout(() => navigate("/auth"), 2000);
       }
     } catch (error) {
@@ -392,6 +395,13 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      
+      {/* Show loader overlay during successful sign-up */}
+      {showLoader && (
+        <BarLoaderOverlay 
+          message="Account created successfully! Redirecting..."
+        />
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { z } from "zod";
+import { BarLoaderOverlay } from "@/components/ui/bar-loader";
 
 const authSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -19,6 +20,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -94,7 +96,11 @@ const Auth = () => {
             title: "Welcome back!",
             description: "You have successfully signed in.",
           });
-          navigate("/dashboard");
+          setShowLoader(true);
+          // Navigate after showing loader for 2 seconds
+          setTimeout(() => {
+            navigate("/dashboard");
+          }, 2000);
         }
       }
     } catch (error) {
@@ -234,6 +240,13 @@ const Auth = () => {
           </div>
         </div>
       </div>
+      
+      {/* Show loader overlay during successful sign-in */}
+      {showLoader && (
+        <BarLoaderOverlay 
+          message="Signing you in..."
+        />
+      )}
     </div>
   );
 };

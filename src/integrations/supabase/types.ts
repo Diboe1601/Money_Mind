@@ -236,6 +236,48 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          type: string
+          timestamp: string
+          read: boolean
+          action_label: string | null
+          action_href: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description: string
+          type: string
+          timestamp?: string
+          read?: boolean
+          action_label?: string | null
+          action_href?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string
+          type?: string
+          timestamp?: string
+          read?: boolean
+          action_label?: string | null
+          action_href?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

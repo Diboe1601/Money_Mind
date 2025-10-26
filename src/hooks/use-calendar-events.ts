@@ -109,16 +109,18 @@ export const useCalendarEvents = () => {
       // Add notification entry
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        await supabase.from('notifications').insert([{
-          user_id: user?.id,
-          title: 'Event updated',
-          description: `Event ${eventData.title ?? ''} updated`,
-          type: 'info',
-          timestamp: new Date().toISOString(),
-          read: false,
-          action_label: 'View Calendar',
-          action_href: '/dashboard/calendar'
-        }]);
+        if (user) {
+          await supabase.from('notifications').insert([{
+            user_id: user.id,
+            title: 'Event updated',
+            description: `Event ${eventData.title ?? ''} updated`,
+            type: 'info',
+            timestamp: new Date().toISOString(),
+            read: false,
+            action_label: 'View Calendar',
+            action_href: '/dashboard/calendar'
+          }]);
+        }
       } catch (e) {
         console.error('Error adding notification:', e);
       }
@@ -151,16 +153,18 @@ export const useCalendarEvents = () => {
       // Add notification entry
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        await supabase.from('notifications').insert([{
-          user_id: user?.id,
-          title: 'Event deleted',
-          description: `An event was deleted`,
-          type: 'warning',
-          timestamp: new Date().toISOString(),
-          read: false,
-          action_label: 'View Calendar',
-          action_href: '/dashboard/calendar'
-        }]);
+        if (user) {
+          await supabase.from('notifications').insert([{
+            user_id: user.id,
+            title: 'Event deleted',
+            description: `An event was deleted`,
+            type: 'warning',
+            timestamp: new Date().toISOString(),
+            read: false,
+            action_label: 'View Calendar',
+            action_href: '/dashboard/calendar'
+          }]);
+        }
       } catch (e) {
         console.error('Error adding notification:', e);
       }

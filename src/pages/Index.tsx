@@ -33,6 +33,7 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null;
     const fetchUserProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -48,15 +49,13 @@ const Index = () => {
           setUserName(profile.first_name);
         }
 
-        // ✅ Real-time Notifications Setup
-        const channel = supabase
+        channel = supabase
           .channel("notifications")
           .on(
             "postgres_changes",
             { event: "INSERT", schema: "public", table: "notifications" },
             (payload) => {
-              const notification = payload.new;
-              console.log("🔔 New notification:", notification);
+              const notification = payload.new as any;
 
               // Optional toast popup
               toast({
@@ -66,15 +65,16 @@ const Index = () => {
             }
           )
           .subscribe();
-
-        // Cleanup when the component unmounts
-        return () => {
-          supabase.removeChannel(channel);
-        };
       }
     };
     
     fetchUserProfile();
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   const handleExportData = () => {

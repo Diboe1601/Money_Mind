@@ -6,7 +6,7 @@ export interface Notification {
   title: string;
   description: string;
   type: "info" | "success" | "warning" | "error";
-  timestamp: Date;
+  timestamp: string;
   read: boolean;
   action?: {
     label: string;
@@ -21,7 +21,7 @@ export function useNotifications() {
       title: "Payment Received",
       description: "Invoice #001 has been paid by John Doe",
       type: "success",
-      timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+      timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(), // 5 minutes ago
       read: false,
       action: {
         label: "View Invoice",
@@ -33,7 +33,7 @@ export function useNotifications() {
       title: "Low Balance Warning",
       description: "Your checking account balance is below $500",
       type: "warning",
-      timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
+      timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
       read: false
     },
     {
@@ -41,7 +41,7 @@ export function useNotifications() {
       title: "Monthly Report Ready",
       description: "Your financial report for this month is ready to view",
       type: "info",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
       read: true,
       action: {
         label: "View Report",
@@ -72,7 +72,7 @@ export function useNotifications() {
     const newNotification: Notification = {
       ...notification,
       id: Date.now().toString(),
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       read: false
     };
     setNotifications(prev => [newNotification, ...prev]);

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
-const variants = {
+const variants: Variants = {
   initial: {
     scaleY: 0.5,
     opacity: 0,
@@ -10,9 +11,9 @@ const variants = {
     opacity: 1,
     transition: {
       repeat: Infinity,
-      repeatType: "mirror" as const,
+      repeatType: "mirror",
       duration: 1,
-      ease: "circIn",
+      // Removed custom ease to satisfy typing for Transition
     },
   },
 };

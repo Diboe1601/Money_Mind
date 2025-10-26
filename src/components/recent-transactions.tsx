@@ -102,7 +102,7 @@ export function RecentTransactions() {
                     {transaction.status !== 'completed' && (
                       <Button
                         variant="outline"
-                        size="xs"
+                        size="sm"
                         className="text-xs"
                         onClick={() => updateTransactionStatus(transaction.id, 'completed')}
                         title="Mark as completed"

@@ -136,10 +136,10 @@ export function useTransactions() {
       });
 
       // If status changed to completed, insert a notification
-      if (status === 'completed') {
+      if (status === 'completed' && user) {
         try {
           await supabase.from('notifications').insert([{
-            user_id: user?.id,
+            user_id: user.id,
             title: 'Transaction completed',
             description: `${(data as Transaction).description} marked as completed ($${(data as Transaction).amount.toLocaleString()})`,
             type: 'success',

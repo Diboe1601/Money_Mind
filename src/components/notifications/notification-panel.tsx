@@ -37,7 +37,21 @@ export function useNotifications() {
       .order("timestamp", { ascending: false });
 
     if (error) console.error("Error fetching notifications:", error);
-    else setNotifications(data as Notification[]);
+    else {
+      const mapped = (data ?? []).map((row: any) => ({
+        id: row.id,
+        title: row.title,
+        description: row.description,
+        type: (row.type as Notification["type"]) || "info",
+        timestamp: row.timestamp,
+        read: row.read,
+        action: row.action_label && row.action_href ? {
+          label: row.action_label,
+          href: row.action_href
+        } : undefined
+      }));
+      setNotifications(mapped);
+    }
     setLoading(false);
   }, []);
 
@@ -51,16 +65,40 @@ export function useNotifications() {
         { event: "*", schema: "public", table: "notifications" },
         (payload) => {
           if (payload.eventType === "INSERT") {
-            setNotifications((prev) => [payload.new as Notification, ...prev]);
+            const row = payload.new as any;
+            const mapped: Notification = {
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              type: (row.type as Notification["type"]) || "info",
+              timestamp: row.timestamp,
+              read: row.read,
+              action: row.action_label && row.action_href ? {
+                label: row.action_label,
+                href: row.action_href
+              } : undefined
+            };
+            setNotifications((prev) => [mapped, ...prev]);
           } else if (payload.eventType === "UPDATE") {
+            const row = payload.new as any;
+            const mapped: Notification = {
+              id: row.id,
+              title: row.title,
+              description: row.description,
+              type: (row.type as Notification["type"]) || "info",
+              timestamp: row.timestamp,
+              read: row.read,
+              action: row.action_label && row.action_href ? {
+                label: row.action_label,
+                href: row.action_href
+              } : undefined
+            };
             setNotifications((prev) =>
-              prev.map((n) =>
-                n.id === payload.new.id ? (payload.new as Notification) : n
-              )
+              prev.map((n) => (n.id === mapped.id ? mapped : n))
             );
           } else if (payload.eventType === "DELETE") {
             setNotifications((prev) =>
-              prev.filter((n) => n.id !== payload.old.id)
+              prev.filter((n) => n.id !== (payload.old as any).id)
             );
           }
         }

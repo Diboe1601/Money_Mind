@@ -133,7 +133,7 @@ const Landing = () => {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                className="absolute top-16 right-6 z-50 w-44 rounded-lg border border-border bg-gradient-card shadow-elevated p-3"
+                className="absolute top-16 right-6 z-50 w-44 rounded-lg border border-border bg-gradient-card shadow-elevated p-3 md:hidden"
               >
                 <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
                   <Button

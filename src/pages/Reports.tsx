@@ -14,7 +14,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 
 const Reports = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [generatingReport, setGeneratingReport] = useState<string | null>(null);
   const { transactions, loading } = useTransactions();
 
@@ -59,7 +60,6 @@ const Reports = () => {
             title: 'Report generated',
             description: `${reportType} generated`,
             type: 'success',
-            timestamp: new Date().toISOString(),
             read: false,
             action_label: 'View Reports',
             action_href: '/dashboard/reports'
@@ -101,14 +101,14 @@ const Reports = () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <Sidebar open={isMobile ? sidebarOpen : true} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 p-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Reports</h1>
               <p className="text-muted-foreground">
                 Generate and download financial reports with real-time analytics
               </p>
@@ -120,7 +120,7 @@ const Reports = () => {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {reports.map((report, index) => (
                 <Card key={index} className="bg-gradient-card shadow-card">
                   <CardHeader>
@@ -132,7 +132,7 @@ const Reports = () => {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 sm:p-6">
                     <Button
                       className="w-full"
                       variant="outline"
@@ -163,3 +163,4 @@ const Reports = () => {
 };
 
 export default Reports;
+import { useIsMobile } from "@/hooks/use-mobile";

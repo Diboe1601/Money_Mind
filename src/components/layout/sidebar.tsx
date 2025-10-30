@@ -44,7 +44,8 @@ export function Sidebar({ open, setOpen }: SidebarProps) {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      // Use local scope to avoid network logout aborts during navigation
+      await supabase.auth.signOut({ scope: 'local' });
       navigate("/");
       toast({
         title: "Signed out successfully",

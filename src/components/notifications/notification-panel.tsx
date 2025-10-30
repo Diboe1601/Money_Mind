@@ -34,7 +34,7 @@ export function useNotifications() {
     const { data, error } = await supabase
       .from("notifications")
       .select("*")
-      .order("timestamp", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) console.error("Error fetching notifications:", error);
     else {
@@ -43,7 +43,7 @@ export function useNotifications() {
         title: row.title,
         description: row.description,
         type: (row.type as Notification["type"]) || "info",
-        timestamp: row.timestamp,
+        timestamp: row.created_at,
         read: row.read,
         action: row.action_label && row.action_href ? {
           label: row.action_label,
@@ -71,7 +71,7 @@ export function useNotifications() {
               title: row.title,
               description: row.description,
               type: (row.type as Notification["type"]) || "info",
-              timestamp: row.timestamp,
+              timestamp: row.created_at,
               read: row.read,
               action: row.action_label && row.action_href ? {
                 label: row.action_label,
@@ -86,7 +86,7 @@ export function useNotifications() {
               title: row.title,
               description: row.description,
               type: (row.type as Notification["type"]) || "info",
-              timestamp: row.timestamp,
+              timestamp: row.created_at,
               read: row.read,
               action: row.action_label && row.action_href ? {
                 label: row.action_label,

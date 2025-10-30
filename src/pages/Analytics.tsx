@@ -7,10 +7,12 @@ import { RevenueChart } from "@/components/charts/revenue-chart"; // ✅ named i
 
 import { ExpenseBreakdown } from "@/components/charts/expense-breakdown";
 import { useTransactions } from "@/hooks/use-transactions";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 const Analytics = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const { transactions, loading } = useTransactions();
 
   // Generate chartData directly from transactions (real-time)
@@ -66,25 +68,25 @@ const Analytics = () => {
   }, [netProfit, transactions, loading]);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <Sidebar open={isMobile ? sidebarOpen : true} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 p-6 space-y-6">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Analytics</h1>
             <p className="text-muted-foreground">
               Insights and trends from your financial data (live updates)
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Revenue Trends</CardTitle>
                 <CardDescription>Monthly revenue over time</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 {/* Pass real-time data to chart */}
                 <RevenueChart transactions={transactions} />
               </CardContent>
@@ -95,8 +97,8 @@ const Analytics = () => {
                 <CardTitle>Expense Breakdown</CardTitle>
                 <CardDescription>Category-wise spending analysis</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ExpenseBreakdown transactions={transactions} />
+              <CardContent className="p-4 sm:p-6">
+                <ExpenseBreakdown />
               </CardContent>
             </Card>
           </div>
@@ -107,7 +109,7 @@ const Analytics = () => {
               <CardTitle>Feedback</CardTitle>
               <CardDescription>Real-time insights based on your data</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 p-4 sm:p-6">
               <p>Total Revenue: ${totalRevenue.toLocaleString()}</p>
               <p>Total Expenses (from analytics): ${totalExpenses.toLocaleString()}</p>
               <p>

@@ -91,12 +91,11 @@ export function useTransactions() {
       });
       // Add notification entry
       try {
-        await supabase.from('notifications').insert([{
+        await supabase.from('notifications').insert([{ 
           user_id: user.id,
           title: 'Transaction added',
           description: `${transaction.type === 'income' ? 'Income' : 'Expense'}: ${transaction.description} ($${transaction.amount.toLocaleString()})`,
           type: 'success',
-          timestamp: new Date().toISOString(),
           read: false,
           action_label: 'View Transactions',
           action_href: '/dashboard/transactions'
@@ -138,12 +137,11 @@ export function useTransactions() {
       // If status changed to completed, insert a notification
       if (status === 'completed' && user) {
         try {
-          await supabase.from('notifications').insert([{
+          await supabase.from('notifications').insert([{ 
             user_id: user.id,
             title: 'Transaction completed',
             description: `${(data as Transaction).description} marked as completed ($${(data as Transaction).amount.toLocaleString()})`,
             type: 'success',
-            timestamp: new Date().toISOString(),
             read: false,
             action_label: 'View Transactions',
             action_href: '/dashboard/transactions'

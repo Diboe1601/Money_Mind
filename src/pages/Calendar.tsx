@@ -10,9 +10,11 @@ import { useCalendarEvents, CalendarEvent } from "@/hooks/use-calendar-events";
 import { EventForm } from "@/components/forms/event-form";
 import { EventDetailsDialog } from "@/components/event-details-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Calendar = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [formOpen, setFormOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -77,14 +79,14 @@ const Calendar = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <Sidebar open={isMobile ? sidebarOpen : true} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 p-6 space-y-6">
-          <div className="flex justify-between items-center">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Calendar</h1>
               <p className="text-muted-foreground">
                 Schedule and manage your appointments
               </p>
@@ -95,7 +97,7 @@ const Calendar = () => {
             </Button>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Upcoming Events</CardTitle>
@@ -103,7 +105,7 @@ const Calendar = () => {
                   Your schedule for the next few days
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 {loading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
@@ -117,7 +119,7 @@ const Calendar = () => {
                 ) : (
                   <div className="space-y-4">
                     {events.map((event) => (
-                      <div key={event.id} className="flex items-start gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div key={event.id} className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                         <CalendarIcon className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -141,7 +143,7 @@ const Calendar = () => {
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-2 flex-shrink-0">
+                        <div className="flex gap-2 flex-shrink-0 mt-2 sm:mt-0">
                           <Button
                             variant="outline"
                             size="sm"
@@ -171,7 +173,7 @@ const Calendar = () => {
                   Common calendar actions
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-3">
                   <Button
                     variant="outline"

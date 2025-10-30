@@ -7,21 +7,23 @@ import { Button } from "@/components/ui/button";
 import { Plus, Target } from "lucide-react";
 import { useBudgets } from "@/hooks/use-budgets";
 import { CreateBudgetForm } from "@/components/forms/create-budget-form";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Budgets = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const { budgets, loading, addBudget } = useBudgets();
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <Sidebar open={isMobile ? sidebarOpen : true} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 p-6 space-y-6">
-          <div className="flex justify-between items-center">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Budgets</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Budgets</h1>
               <p className="text-muted-foreground">
                 Track and manage your spending limits
               </p>
@@ -33,10 +35,10 @@ const Budgets = () => {
           </div>
           
           {loading ? (
-            <div className="text-center py-12">Loading budgets...</div>
+            <div className="text-center py-8 sm:py-12">Loading budgets...</div>
           ) : budgets.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center">
+              <CardContent className="py-8 sm:py-12 text-center">
                 <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No budgets yet</h3>
                 <p className="text-muted-foreground mb-4">
@@ -49,7 +51,7 @@ const Budgets = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
               {budgets.map((budget) => (
                 <Card key={budget.id}>
                   <CardHeader>
@@ -63,7 +65,7 @@ const Budgets = () => {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 sm:p-6">
                     <div className="space-y-3">
                       <Progress 
                         value={(budget.spent / budget.amount) * 100} 

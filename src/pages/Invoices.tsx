@@ -9,9 +9,11 @@ import { InvoiceForm } from "@/components/forms/invoice-form";
 import { useInvoices } from "@/hooks/use-invoices";
 import { generateInvoicePDF } from "@/lib/invoice-generator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Invoices = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const [viewInvoice, setViewInvoice] = useState<any>(null);
   const { invoices, loading, addInvoice } = useInvoices();
 
@@ -34,14 +36,14 @@ const Invoices = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <Sidebar open={isMobile ? sidebarOpen : true} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 p-6 space-y-6">
-          <div className="flex justify-between items-center">
+        <main className="flex-1 p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Invoices</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Invoices</h1>
               <p className="text-muted-foreground">
                 Manage your billing and invoicing
               </p>
@@ -56,7 +58,7 @@ const Invoices = () => {
                 All your invoices in one place
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               {loading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -68,17 +70,17 @@ const Invoices = () => {
               ) : (
                 <div className="space-y-4">
                   {invoices.map((invoice) => (
-                    <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={invoice.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border rounded-lg">
                       <div className="flex items-center gap-4">
                         <CreditCard className="h-8 w-8 text-primary" />
                         <div>
-                          <p className="font-medium">{invoice.invoice_number}</p>
-                          <p className="text-sm text-muted-foreground">{invoice.client_name}</p>
+                          <p className="font-medium truncate max-w-[160px] sm:max-w-none">{invoice.invoice_number}</p>
+                          <p className="text-sm text-muted-foreground truncate max-w-[160px] sm:max-w-none">{invoice.client_name}</p>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 sm:justify-end">
+                        <div className="text-left sm:text-right">
                           <p className="font-medium">${invoice.amount.toLocaleString()}</p>
                           <p className="text-sm text-muted-foreground">
                             {new Date(invoice.due_date).toLocaleDateString()}
@@ -120,7 +122,7 @@ const Invoices = () => {
           </DialogHeader>
           {viewInvoice && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Invoice Number</p>
                   <p className="font-medium">{viewInvoice.invoice_number}</p>

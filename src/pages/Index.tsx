@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import BlurText from "@/components/ui/blur-text";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   DollarSign, 
   TrendingUp, 
@@ -25,12 +26,13 @@ import {
 } from "lucide-react";
 
 const Index = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userName, setUserName] = useState<string>("");
   const { metrics, loading } = useDashboardMetrics();
   const { stats, loading: statsLoading } = useQuickStats();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
@@ -77,6 +79,11 @@ const Index = () => {
     };
   }, []);
 
+  // Adjust sidebar visibility based on device size
+  useEffect(() => {
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
+
   const handleExportData = () => {
     toast({
       title: "Export Started",
@@ -89,12 +96,12 @@ const Index = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-dark">
+    <div className="flex min-h-screen bg-gradient-dark">
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           {/* Welcome Section */}
           <div className="mb-8">
             <BlurText
@@ -102,7 +109,7 @@ const Index = () => {
               delay={150}
               animateBy="words"
               direction="top"
-              className="text-3xl font-bold font-heading text-foreground mb-2"
+              className="text-2xl md:text-3xl font-bold font-heading text-foreground mb-2"
             />
             <p className="text-muted-foreground">
               Here's what's happening with your finances today.
@@ -110,11 +117,11 @@ const Index = () => {
           </div>
 
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {loading ? (
               <>
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-gradient-card rounded-lg p-6 shadow-card">
+                  <div key={i} className="bg-gradient-card rounded-lg p-4 sm:p-6 shadow-card">
                     <div className="flex items-center justify-between mb-2">
                       <Skeleton className="h-4 w-24" />
                       <Skeleton className="h-4 w-4" />
@@ -158,37 +165,39 @@ const Index = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <AddTransactionForm />
-            <Button variant="outline" onClick={() => navigate("/invoices")}>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 mb-8">
+            <div className="w-full sm:w-auto">
+              <AddTransactionForm />
+            </div>
+            <Button className="w-full sm:w-auto" variant="outline" onClick={() => navigate("/invoices")}>
               <Plus className="mr-2 h-4 w-4" />
               Create Invoice
             </Button>
-            <Button variant="outline" onClick={handleExportData}>
+            <Button className="w-full sm:w-auto" variant="outline" onClick={handleExportData}>
               <Download className="mr-2 h-4 w-4" />
               Export Data
             </Button>
-            <Button variant="outline" onClick={handleViewReports}>
+            <Button className="w-full sm:w-auto" variant="outline" onClick={handleViewReports}>
               <Eye className="mr-2 h-4 w-4" />
               View Reports
             </Button>
           </div>
 
           {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
             <RevenueChart />
             <ExpenseBreakdown />
           </div>
 
           {/* Recent Transactions */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
             <div className="xl:col-span-2">
               <RecentTransactions />
             </div>
             
             {/* Financial Summary */}
             <div className="space-y-6">
-              <div className="bg-gradient-card rounded-lg p-6 shadow-card">
+              <div className="bg-gradient-card rounded-lg p-4 sm:p-6 shadow-card">
                 <h3 className="font-semibold font-heading text-lg mb-4">Monthly Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -216,7 +225,7 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="bg-gradient-card rounded-lg p-6 shadow-card">
+              <div className="bg-gradient-card rounded-lg p-4 sm:p-6 shadow-card">
                 <h3 className="font-semibold font-heading text-lg mb-4">Quick Stats</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">

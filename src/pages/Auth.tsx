@@ -21,13 +21,25 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(false);
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
+    // Check if user is already logged in or in recovery mode
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
+      // Check if this is a password recovery flow
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const type = hashParams.get('type');
+      
+      if (type === 'recovery') {
+        setIsRecoveryMode(true);
+        return;
+      }
+      
       if (session) {
         navigate("/dashboard");
       }
@@ -46,8 +58,13 @@ const Auth = () => {
     }
 
     try {
+      // Use the preview URL or production URL
+      const redirectUrl = window.location.hostname === 'localhost' 
+        ? 'https://moneymind-1dc8.lovable.app/auth'
+        : `${window.location.origin}/auth`;
+        
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`
+        redirectTo: redirectUrl
       });
 
       if (error) throw error;
@@ -62,6 +79,36 @@ const Auth = () => {
         description: "Failed to send reset email. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password updated!",
+        description: "Your password has been successfully reset.",
+      });
+
+      setIsRecoveryMode(false);
+      setNewPassword("");
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to reset password. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -201,17 +248,57 @@ const Auth = () => {
           <div className="bg-gradient-card/80 backdrop-blur-sm rounded-2xl p-8 shadow-elevated border border-border/50">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold font-heading text-foreground mb-2">
-                {isSignUp ? "Create Account" : "Welcome Back"}
+                {isRecoveryMode ? "Reset Your Password" : (isSignUp ? "Create Account" : "Welcome Back")}
               </h1>
               <p className="text-muted-foreground">
-                {isSignUp 
-                  ? "Start managing your finances with MoneyMind" 
-                  : "Sign in to access your financial dashboard"
+                {isRecoveryMode 
+                  ? "Enter your new password below" 
+                  : (isSignUp 
+                    ? "Start managing your finances with MoneyMind" 
+                    : "Sign in to access your financial dashboard"
+                  )
                 }
               </p>
             </div>
 
-            <form onSubmit={handleAuth} className="space-y-6">
+            {isRecoveryMode ? (
+              <form onSubmit={handlePasswordReset} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword" className="text-foreground">New Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="newPassword"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="bg-background/50 border-border/50 focus:border-primary pr-10"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Password must be at least 6 characters long
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-primary hover:bg-primary-hover shadow-elevated"
+                  disabled={loading}
+                >
+                  {loading ? "Updating..." : "Update Password"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleAuth} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email</Label>
                 <Input
@@ -264,18 +351,21 @@ const Auth = () => {
                 {loading ? "Please wait..." : (isSignUp ? "Create Account" : "Sign In")}
               </Button>
             </form>
+            )}
 
-            <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
-                Don't have an account?
-                <Link
-                  to="/signup"
-                  className="ml-2 text-primary hover:text-primary-hover font-medium transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </div>
+            {!isRecoveryMode && (
+              <div className="mt-6 text-center">
+                <p className="text-muted-foreground">
+                  Don't have an account?
+                  <Link
+                    to="/signup"
+                    className="ml-2 text-primary hover:text-primary-hover font-medium transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

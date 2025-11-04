@@ -75,10 +75,10 @@ const Auth = () => {
     }
 
     try {
-      // Use the preview URL or production URL
+      // Use the preview URL or production URL, accounting for basename
       const redirectUrl = window.location.hostname === 'localhost' 
-        ? 'https://moneymind-1dc8.lovable.app/auth'
-        : `${window.location.origin}/auth`;
+        ? 'https://moneymind-1dc8.lovable.app/Money_Mind/auth'
+        : `${window.location.origin}${import.meta.env.BASE_URL}auth`;
         
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl

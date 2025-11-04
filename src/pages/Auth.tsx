@@ -29,23 +29,40 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in or in recovery mode
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
       // Check if this is a password recovery flow
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const type = hashParams.get('type');
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
       
-      if (type === 'recovery') {
-        setIsRecoveryMode(true);
+      if (type === 'recovery' && accessToken) {
+        // Set the session with the tokens from the recovery link
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        });
+        
+        if (!error) {
+          setIsRecoveryMode(true);
+          // Clean up the URL hash
+          window.history.replaceState(null, '', window.location.pathname);
+        } else {
+          toast({
+            title: "Error",
+            description: "Invalid or expired reset link. Please request a new one.",
+            variant: "destructive"
+          });
+        }
         return;
       }
       
-      if (session) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && !isRecoveryMode) {
         navigate("/dashboard");
       }
     };
     checkUser();
-  }, [navigate]);
+  }, [navigate, toast, isRecoveryMode]);
 
   const handleForgotPassword = async () => {
     if (!email) {

@@ -47,11 +47,11 @@ export function MetricCard({ title, value, change, icon, className }: MetricCard
         {icon && <div className="text-muted-foreground">{icon}</div>}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold font-heading">{value}</div>
+        <div className="text-xl sm:text-2xl font-bold font-heading break-words">{value}</div>
         {change && (
           <div className={cn("flex items-center text-xs mt-1", getChangeColor())}>
             {getTrendIcon()}
-            <span className="ml-1">{change.value} from last month</span>
+            <span className="ml-1 line-clamp-1">{change.value} <span className="hidden sm:inline">from last month</span></span>
           </div>
         )}
       </CardContent>

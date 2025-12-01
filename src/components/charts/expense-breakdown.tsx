@@ -46,9 +46,9 @@ export function ExpenseBreakdown() {
       <CardHeader>
         <CardTitle className="font-heading">Expense Breakdown</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-2 sm:px-6">
         {expenseData.length === 0 ? (
-          <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+          <div className="h-[250px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm">
             No expense data available
           </div>
         ) : (
@@ -61,7 +61,11 @@ export function ExpenseBreakdown() {
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => {
+                  const isMobile = window.innerWidth < 640;
+                  return isMobile ? `${(percent * 100).toFixed(0)}%` : `${name} ${(percent * 100).toFixed(0)}%`;
+                }}
+                labelLine={false}
               >
                 {expenseData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />

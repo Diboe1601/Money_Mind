@@ -161,6 +161,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          action_href: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          read: boolean | null
+          related_id: string | null
+          related_table: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          action_href?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          read?: boolean | null
+          related_id?: string | null
+          related_table?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          action_href?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          read?: boolean | null
+          related_id?: string | null
+          related_table?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -233,48 +272,6 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      notifications: {
-        Row: {
-          id: string
-          user_id: string
-          title: string
-          description: string
-          type: string
-          timestamp: string
-          read: boolean
-          action_label: string | null
-          action_href: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          title: string
-          description: string
-          type: string
-          timestamp?: string
-          read?: boolean
-          action_label?: string | null
-          action_href?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          title?: string
-          description?: string
-          type?: string
-          timestamp?: string
-          read?: boolean
-          action_label?: string | null
-          action_href?: string | null
-          created_at?: string
-          updated_at?: string
         }
         Relationships: []
       }

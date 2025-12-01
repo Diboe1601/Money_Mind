@@ -52,31 +52,31 @@ export function RevenueChart({ transactions }: RevenueChartProps) {
 
   return (
     <Card className="bg-gradient-card shadow-card">
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <CardHeader className="flex flex-col gap-3">
         <CardTitle className="font-heading">Revenue vs Expenses</CardTitle>
-        <div className="flex gap-6 mt-2 sm:mt-0">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[hsl(var(--primary))]" />
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className="w-3 h-3 rounded-full bg-[hsl(var(--primary))] flex-shrink-0" />
+            <span className="text-xs sm:text-sm text-muted-foreground font-medium">
               Revenue: <span className="text-foreground font-semibold">${totalRevenue.toLocaleString()}</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[hsl(var(--danger))]" />
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className="w-3 h-3 rounded-full bg-[hsl(var(--danger))] flex-shrink-0" />
+            <span className="text-xs sm:text-sm text-muted-foreground font-medium">
               Expenses: <span className="text-foreground font-semibold">${totalExpenses.toLocaleString()}</span>
             </span>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-2 sm:px-6">
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={{ left: -10, right: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+            <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={10} />
             <YAxis
               stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+              fontSize={10}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip

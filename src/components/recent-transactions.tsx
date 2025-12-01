@@ -11,9 +11,9 @@ export function RecentTransactions() {
   if (loading) {
     return (
       <Card className="bg-gradient-card shadow-card">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           <CardTitle className="font-heading">Recent Transactions</CardTitle>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto">
             <Eye className="mr-2 h-4 w-4" />
             View All
           </Button>
@@ -45,9 +45,9 @@ export function RecentTransactions() {
 
   return (
     <Card className="bg-gradient-card shadow-card">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <CardTitle className="font-heading">Recent Transactions</CardTitle>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
           <Eye className="mr-2 h-4 w-4" />
           View All
         </Button>
@@ -61,9 +61,9 @@ export function RecentTransactions() {
             </div>
           ) : (
             recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 transition-colors">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-full ${
+              <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <div className={`p-2 rounded-full flex-shrink-0 ${
                     transaction.type === 'income' 
                       ? 'bg-success/10 text-success' 
                       : 'bg-danger/10 text-danger'
@@ -74,10 +74,10 @@ export function RecentTransactions() {
                       <ArrowDownRight className="h-4 w-4" />
                     )}
                   </div>
-                  <div>
-                    <p className="font-medium text-sm">{transaction.description}</p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <p className="text-xs text-muted-foreground">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm truncate">{transaction.description}</p>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <p className="text-xs text-muted-foreground whitespace-nowrap">
                         {new Date(transaction.date).toLocaleDateString()}
                       </p>
                       <Badge variant="secondary" className="text-xs">
@@ -86,13 +86,13 @@ export function RecentTransactions() {
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className={`font-semibold ${
+                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 sm:text-right">
+                  <p className={`font-semibold text-sm sm:text-base whitespace-nowrap ${
                     transaction.type === 'income' ? 'text-success' : 'text-danger'
                   }`}>
                     {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toLocaleString()}
                   </p>
-                  <div className="flex items-center gap-2 justify-end">
+                  <div className="flex items-center gap-2">
                     <Badge 
                       variant={transaction.status === 'completed' ? 'default' : 'secondary'}
                       className="text-xs"
@@ -103,12 +103,12 @@ export function RecentTransactions() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs"
+                        className="text-xs h-7"
                         onClick={() => updateTransactionStatus(transaction.id, 'completed')}
                         title="Mark as completed"
                       >
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Complete
+                        <CheckCircle className="h-3 w-3 sm:mr-1" />
+                        <span className="hidden sm:inline">Complete</span>
                       </Button>
                     )}
                   </div>
